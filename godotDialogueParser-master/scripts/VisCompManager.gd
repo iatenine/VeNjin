@@ -152,14 +152,10 @@ func set_image(var texture):
 	character_img.set_texture(texture);
 
 func _on_next_pressed():
-	print("Finally...")
 	if story != null:
 		if (story.turnPage()):
-			print("Show page")
 			showPage()
 		elif(story.nextChapter()):
-			print("chapter flip")
 			showPage()
 		else:
-			print("Else statement")
 			pass
