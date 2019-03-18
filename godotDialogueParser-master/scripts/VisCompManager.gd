@@ -47,6 +47,7 @@ func _ready():
 	decisionTimer.one_shot = true
 	
 	next_Button.connect("pressed", self, "_on_next_pressed")
+	
 	pauseTimer.connect("timeout", self, "_on_pause_timeout")
 	decisionTimer.connect("timeout", self, "_on_decision_timeout")
 	
@@ -67,9 +68,7 @@ func showPage(page:Dictionary = story.getPage()):
 		set_name(page.speaker)
 		set_text(page.speech)
 		optionHandler(page)
-		
-		if page.choices.size() != 0:
-			print("CHOICES: ", page.choices)
+	
 	#Chapter Changes
 	elif keys.has("number"):
 		set_name("Chapter " + str(page.number))
@@ -93,6 +92,16 @@ func optionHandler(page):
 	
 	if opts.has("pauseTime") or opts.has("decisionTime"):
 		handlePageTimers(page)
+	
+	if page.choices.size() != 0:
+		for i in page.choices.size():
+			var nButton = Button.new()
+			nButton.text = page.choices.values()[i]
+			add_button(nButton)
+			
+			nButton.connect("pressed", self, "_on_choice_pressed", [page.choices.keys()[i]])
+		
+		next_Button.hide()
 
 func handlePageTimers(page):
 	if page.options.keys().has("pauseTime"):
@@ -174,10 +183,14 @@ func _on_next_pressed():
 		if (story.turnPage()):
 			showPage()
 		elif(story.nextChapter()):
-			#story.turnPage()
 			showPage()
 		else:
 			endStory()
+
+func _on_choice_pressed(selection):
+	if story.movePath(selection):
+		clear_inputs()
+		_on_next_pressed()
 
 func endStory():
 	get_tree().quit()

@@ -31,6 +31,7 @@ const pageFeatures = ["speaker", "speech", "options", "choices", "chapterEnd", "
 const optionList = ["image", "music", "sfx", "background", "pauseTime", "decisionTime"]
 
 #First int indicates current index by chapter, 2nd int denotes active page of dialogue
+var path = 0
 var bookmark = Vector2(0, 0)    setget reset, getBookmark
 var lastChapter = 0
 var chapters = []
@@ -63,12 +64,11 @@ func addPage(spch:String, spker:String = "", optList:Dictionary = {}, choiceList
 			textureBuffer.append(load(newPage.options.background))
 		if newPage.options.keys().has("image"):
 			textureBuffer.append(load(newPage.options.image))
-			#print(textureBuffer[textureBuffer.size()-1].resource_path)
 	else:
 		print("Dict not valid")
 	return true
 
-func getBookmark():
+func getBookmark() -> Vector2:
 	return bookmark
 
 func getChapter(chap:int = bookmark.x):
@@ -77,7 +77,7 @@ func getChapter(chap:int = bookmark.x):
 	return chapters[chap]
 
 #Returns dict with chapter properties
-func getChapIndex(chap:int = bookmark.x):
+func getChapIndex(chap:int = bookmark.x) -> Dictionary:
 	return getChapter(chap)[0]
 
 func getPage(page:int = bookmark.y, turn:bool = false):
@@ -122,26 +122,37 @@ func jumpToPage(newPage:int):
 	else:
 		print("NEW PAGE ",newPage, " OUT OF BOUNDS")
 
-func moveBranch(newBranch:int):
+func movePath(newBranch:int) -> bool:
 	var currChap = getChapIndex()
+	
+	if currChap.path == newBranch:
+		return true
 	
 	for i in chapters.size():
 		if(getChapter(i)[0].path == newBranch and getChapter(i)[0].number == currChap.number):
 			bookmark = Vector2(i, 0)
-			break
+			path = newBranch
+			return true
+	
+	return false
 
 #Return false if there isn't a next chapter
 func nextChapter() -> bool:
-	if bookmark.x < chapters.size()-1:
-		var currChap = getChapIndex().number
-		bookmark.y = 0
-		bookmark.x += 1
-		
-		#Use while loop in case there are multiple paths in the way
-		while(currChap == getChapIndex().number):
-			bookmark.x += 1
-		return true
+	if isLastChapter():
+		return false
 	
+	var fallback = bookmark
+	
+	bookmark.y = 0
+	var nextChapter = getChapIndex().number + 1
+	
+	while bookmark.x < chapters.size() - 1:
+		bookmark.x += 1
+		if nextChapter == getChapIndex().number and path == getChapIndex().path:
+			return true 
+	
+	#Reset bookmark if not found
+	bookmark = fallback
 	return false
 
 func prevChapter() -> bool:
@@ -154,8 +165,9 @@ func prevChapter() -> bool:
 
 func reset(newLoc:Vector2 = Vector2(0, 0)):
 	bookmark = newLoc
+	path = 0
 
-func setChapter(newChap:int):
+func setChapter(newChap:int) -> bool:
 	if newChap >= 0 and newChap <= chapters.size():
 		bookmark = Vector2(newChap, 0)
 		return true
