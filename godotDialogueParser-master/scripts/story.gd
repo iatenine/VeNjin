@@ -1,8 +1,32 @@
 extends Reference
 
+#Story.gd
+#Manages data for a single story including options, dialogues and chapter meta data
+
+#Stories are effectively 2D arrays with each chapter occupying 1 column
+#Item 0 in each chapter is a specialized page containing its name, number and path
+#Linear stories should all use path 0 and branching stories will use this as the default
+
+#Pages beyond 0 have the following features:
+#Speaker: What you would like to appear in the name box
+#Speech: The main text for a player to read, typically dialogue
+#options: A dictionary of relevant options to this page (explained below)
+#choices: A dictionary of dictionaries for branching storylines (explained below)
+
+#Options:
+#Use the following by passing a filepath
+#   image: The image to be displayed front and center, usually a character who is speaking
+#   music: Music to begin playing at this point (looping)
+#   sfx: A sound to play at this point (non-looping)
+#   background: A background to be loaded at this moment in the story
+#Use the following by passing an int
+#    pauseTime: Add a dramatic pause before showing the next button
+#    decisionTime: Add a countdown for the player to make a decision
+#                  (the current path will be treated as default if time runs out)
+
 enum {CHAPTER, PAGE, OPTIONS, CHOICES}
 
-const chapterFeatures = ["chapterName", "chapter", "branch"]
+const chapterFeatures = ["name", "number", "path"]
 const pageFeatures = ["speaker", "speech", "options", "choices", "chapterEnd", "getData"]
 const optionList = ["image", "music", "sfx", "background", "pauseTime", "decisionTime"]
 
@@ -14,9 +38,9 @@ var textureBuffer = []    #Hold textures in memory to reduce load times when dra
 
 func addChapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
 	var newArray = []
-	var newChapter = {chapterName = chapName,
-		chapter = chapNumber,
-		branch = chapBranch,
+	var newChapter = {name = chapName,
+		number = chapNumber,
+		path = chapBranch,
 	}
 	if chapNumber > lastChapter:
 		lastChapter = chapNumber
@@ -24,7 +48,7 @@ func addChapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
 	newArray.append(newChapter)
 	chapters.append(newArray)
 
-#Creates and appends a new page of dialogue to the current chapter's branch
+#Creates and appends a new page of dialogue to the current chapter's path
 func addPage(spch:String, spker:String = "", optList:Dictionary = {}, choiceList:Dictionary = {}):
 	var newPage = {
 		speech = spch,
@@ -77,7 +101,12 @@ func getTOC():
 	
 	return ret
 
-func isLastChapter():
+func isBookEnd():
+	if isLastChapter() == true and isLastPage() == true:
+		return true
+	return false
+
+func isLastChapter() -> bool:
 	if bookmark.x == chapters.size()-1:
 		return true
 	return false
@@ -97,22 +126,25 @@ func moveBranch(newBranch:int):
 	var currChap = getChapIndex()
 	
 	for i in chapters.size():
-		if(getChapter(i)[0].branch == newBranch and getChapter(i)[0].chapter == currChap.chapter):
+		if(getChapter(i)[0].path == newBranch and getChapter(i)[0].number == currChap.number):
 			bookmark = Vector2(i, 0)
 			break
 
-func nextChapter():
+#Return false if there isn't a next chapter
+func nextChapter() -> bool:
 	if bookmark.x < chapters.size()-1:
-		var currChap = getChapIndex().chapter
+		var currChap = getChapIndex().number
 		bookmark.y = 0
 		bookmark.x += 1
-		while(currChap == getChapIndex().chapter):
+		
+		#Use while loop in case there are multiple paths in the way
+		while(currChap == getChapIndex().number):
 			bookmark.x += 1
 		return true
 	
 	return false
 
-func prevChapter():
+func prevChapter() -> bool:
 	if bookmark.x > 0:
 		bookmark.x -= 1
 		bookmark.y = 0
@@ -122,7 +154,6 @@ func prevChapter():
 
 func reset(newLoc:Vector2 = Vector2(0, 0)):
 	bookmark = newLoc
-	return true
 
 func setChapter(newChap:int):
 	if newChap >= 0 and newChap <= chapters.size():
@@ -131,7 +162,7 @@ func setChapter(newChap:int):
 	
 	return false
 
-func turnPage():
+func turnPage() -> bool:
 	if typeof(getChapter()) == TYPE_BOOL:
 		return false
 	

@@ -29,7 +29,8 @@ margin_bottom = 42.0
 size_flags_horizontal = 15
 size_flags_stretch_ratio = 3.0
 custom_styles/normal = ExtResource( 1 )
-text = "nome"
+text = "Name
+"
 autowrap = true
 clip_text = true
 uppercase = true
@@ -51,7 +52,8 @@ margin_right = -21.0
 margin_bottom = 152.0
 size_flags_horizontal = 11
 custom_styles/normal = ExtResource( 1 )
-text = "Texto aqui"
+text = "DIALOGUE
+"
 override_selected_font_color = true
 
 [node name="NextButton" type="Button" parent="NinePatchRect"]

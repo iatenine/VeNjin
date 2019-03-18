@@ -1,5 +1,12 @@
 extends Node
 
+#VisCompManager.gd
+#Intermediary class to connect story.gd data with visual components of a scene
+
+#Dependencies: story.gd, Dialogue_Panel.tscn
+#dPanel, character and background images must be specified in editor
+#story data must be passed via loadStory() function
+
 const book = preload("res://scripts/story.gd")
 
 export (NodePath) var background_img
@@ -12,7 +19,7 @@ var nameBox              #Shows speaking character's name
 var next_Button
 var options_Container    #HBox Container recommended
 
-var story
+var story                #null reference until loadStory() is called
 
 #Audio streams
 var bgmStream = AudioStreamPlayer.new()
@@ -42,24 +49,31 @@ func _ready():
 	next_Button.connect("pressed", self, "_on_next_pressed")
 	pauseTimer.connect("timeout", self, "_on_pause_timeout")
 	decisionTimer.connect("timeout", self, "_on_decision_timeout")
+	
+	clearBoxes()
 
 func loadStory(newBook):
 	story = newBook
 
-func showPage(page = story.getPage()):
-	if typeof(page) != TYPE_DICTIONARY:
-		return false
+func showPage(page:Dictionary = story.getPage()):
+	var keys = page.keys()
+	
+	next_Button.show()
+	if(story.isBookEnd()):
+		next_Button.text = "The End"
 	
 	#Pages
-	if page.keys().has("speech"):
+	if keys.has("speech"):
 		set_name(page.speaker)
 		set_text(page.speech)
 		optionHandler(page)
-	
+		
+		if page.choices.size() != 0:
+			print("CHOICES: ", page.choices)
 	#Chapter Changes
-	elif page.keys().has("chapter"):
-		set_name("Chapter " + str(page.chapter))
-		set_text(page.chapterName)
+	elif keys.has("number"):
+		set_name("Chapter " + str(page.number))
+		set_text(page.name)
 	else:
 		pass
 
@@ -119,6 +133,7 @@ func open():
 	
 func set_text(var t):
 	speechBox.set_text(t);
+	speechBox.show()
 	pass
 	
 func set_name(var t):
@@ -131,7 +146,10 @@ func set_name(var t):
 func clearBoxes():
 	speechBox.set_text("");
 	nameBox.set_text("");
+	
 	next_Button.hide();
+	speechBox.hide()
+	nameBox.hide()
 
 func add_button(var button):
 	next_Button.hide();
@@ -156,6 +174,10 @@ func _on_next_pressed():
 		if (story.turnPage()):
 			showPage()
 		elif(story.nextChapter()):
+			#story.turnPage()
 			showPage()
 		else:
-			pass
+			endStory()
+
+func endStory():
+	get_tree().quit()

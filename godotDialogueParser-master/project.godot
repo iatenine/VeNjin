@@ -17,7 +17,6 @@ _global_script_class_icons={
 
 config/name="dialogue_parser"
 run/main_scene="res://scenes/Main.tscn"
-config/icon="res://icon.png"
 
 [locale]
 
