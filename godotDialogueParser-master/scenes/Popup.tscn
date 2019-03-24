@@ -6,14 +6,11 @@
 [ext_resource path="res://fonts/SegoeUI.tres" type="DynamicFont" id=4]
 
 [node name="Control" type="Control"]
-margin_right = 1024.0
-margin_bottom = 600.0
-__meta__ = {
-"_edit_lock_": true
-}
+margin_top = 1.0
+margin_right = 249.0
+margin_bottom = 149.0
 
 [node name="Popup" type="PopupDialog" parent="."]
-visible = true
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -27,6 +24,7 @@ grow_vertical = 2
 popup_exclusive = true
 script = ExtResource( 1 )
 __meta__ = {
+"_edit_group_": true,
 "_edit_lock_": true
 }
 
@@ -62,14 +60,13 @@ text = "Popup Dialog"
 scroll_active = false
 
 [node name="Body" type="RichTextLabel" parent="Popup"]
-margin_left = 8.0
-margin_top = 32.0
-margin_right = 242.0
-margin_bottom = 115.0
+margin_left = 7.0
+margin_top = 31.0
+margin_right = 241.0
+margin_bottom = 114.0
 custom_fonts/bold_font = ExtResource( 3 )
 custom_fonts/normal_font = ExtResource( 4 )
-text = "Example Text Example Text Example
-Example Text Example Text Example
-Example Text Example Text Example
-Example Text Example Text Example"
+text = "Let's try a shorter message with some auto-wrapping!
+"
 
+[connection signal="pressed" from="Popup/Button" to="Popup" method="_on_Button_pressed"]
