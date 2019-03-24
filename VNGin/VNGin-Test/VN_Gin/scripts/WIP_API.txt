@@ -1,0 +1,23 @@
+Story.gd
+Manages data for a single story including options, dialogues and chapter meta data
+
+Stories are effectively 2D arrays with each chapter occupying 1 column
+Item 0 in each chapter is a specialized page containing its name, number and path
+Linear stories should all use path 0 and branching stories will use this as the default
+
+Pages beyond 0 have the following features:
+Speaker: What you would like to appear in the name box
+Speech: The main text for a player to read, typically dialogue
+options: A dictionary of relevant options to this page (explained below)
+choices: A dictionary of dictionaries for branching storylines (explained below)
+
+Options:
+Use the following by passing a filepath
+   image: The image to be displayed front and center, usually a character who is speaking
+   music: Music to begin playing at this point (looping)
+   sfx: A sound to play at this point (non-looping)
+   background: A background to be loaded at this moment in the story
+Use the following by passing an int
+    pauseTime: Add a dramatic pause before showing the next button
+    decisionTime: Add a countdown for the player to make a decision
+                  (the current path will be treated as default if time runs out)
