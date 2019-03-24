@@ -1,29 +1,5 @@
 extends Reference
 
-#Story.gd
-#Manages data for a single story including options, dialogues and chapter meta data
-
-#Stories are effectively 2D arrays with each chapter occupying 1 column
-#Item 0 in each chapter is a specialized page containing its name, number and path
-#Linear stories should all use path 0 and branching stories will use this as the default
-
-#Pages beyond 0 have the following features:
-#Speaker: What you would like to appear in the name box
-#Speech: The main text for a player to read, typically dialogue
-#options: A dictionary of relevant options to this page (explained below)
-#choices: A dictionary of dictionaries for branching storylines (explained below)
-
-#Options:
-#Use the following by passing a filepath
-#   image: The image to be displayed front and center, usually a character who is speaking
-#   music: Music to begin playing at this point (looping)
-#   sfx: A sound to play at this point (non-looping)
-#   background: A background to be loaded at this moment in the story
-#Use the following by passing an int
-#    pauseTime: Add a dramatic pause before showing the next button
-#    decisionTime: Add a countdown for the player to make a decision
-#                  (the current path will be treated as default if time runs out)
-
 enum {CHAPTER, PAGE, OPTIONS, CHOICES}
 
 const chapterFeatures = ["name", "number", "path"]
@@ -43,6 +19,7 @@ func addChapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
 		number = chapNumber,
 		path = chapBranch,
 	}
+	
 	if chapNumber > lastChapter:
 		lastChapter = chapNumber
 	
@@ -80,19 +57,10 @@ func getChapter(chap:int = bookmark.x):
 func getChapIndex(chap:int = bookmark.x) -> Dictionary:
 	return getChapter(chap)[0]
 
-func getPage(page:int = bookmark.y, turn:bool = false):
-	if typeof(getChapter()) == TYPE_BOOL:
-		return false
-	
-	if turn == true:
-		var canTurn = turnPage()
-		if !canTurn:
-			print("End of chapter")
-	
-	if page < getChapter().size():
-		return getChapter()[page]
+func getPage(page:Vector2 = bookmark) -> Dictionary:
+	return getChapter()[page.y]
 
-func getTOC():
+func getTOC() -> Array:
 	var ret = []
 	ret.resize(chapters.size())
 	
@@ -101,7 +69,7 @@ func getTOC():
 	
 	return ret
 
-func isBookEnd():
+func isBookEnd() -> bool:
 	if isLastChapter() == true and isLastPage() == true:
 		return true
 	return false
@@ -111,7 +79,7 @@ func isLastChapter() -> bool:
 		return true
 	return false
 
-func isLastPage():
+func isLastPage() -> bool:
 	if bookmark.y == getChapter().size() -1:
 		return true
 	return false
@@ -168,7 +136,7 @@ func reset(newLoc:Vector2 = Vector2(0, 0)):
 	path = 0
 
 func setChapter(newChap:int) -> bool:
-	if newChap >= 0 and newChap <= chapters.size():
+	if newChap == clamp(float(newChap), 0, float(chapters.size())):
 		bookmark = Vector2(newChap, 0)
 		return true
 	

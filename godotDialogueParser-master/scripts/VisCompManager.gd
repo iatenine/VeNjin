@@ -129,12 +129,11 @@ func playPageSounds(page):
 
 
 func _on_decision_timeout():
+	#TODO
 	pass
 
 func _on_pause_timeout():
-	if !story.isLastChapter() or !story.isLastPage():
-		next_Button.show()
-	else:
+	#TODO
 		pass
 
 func open():
