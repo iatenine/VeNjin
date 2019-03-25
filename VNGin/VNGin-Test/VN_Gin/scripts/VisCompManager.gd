@@ -25,10 +25,6 @@ var story                #null reference until loadStory() is called
 var bgmStream = AudioStreamPlayer.new()
 var sfxStream = AudioStreamPlayer.new()
 
-#Timers
-var decisionTimer = Timer.new()
-var pauseTimer = Timer.new()
-
 func _ready():
 	dPanel = get_node(str(dPanel) + "/NinePatchRect")
 	background_img = get_node(background_img)
@@ -40,16 +36,9 @@ func _ready():
 	
 	#Add children
 	add_child(sfxStream)
-	add_child(decisionTimer)
-	add_child(pauseTimer)
 	add_child(bgmStream)
-	pauseTimer.one_shot = true
-	decisionTimer.one_shot = true
 	
 	next_Button.connect("pressed", self, "_on_next_pressed")
-	
-	pauseTimer.connect("timeout", self, "_on_pause_timeout")
-	decisionTimer.connect("timeout", self, "_on_decision_timeout")
 	
 	clearBoxes()
 
@@ -90,9 +79,6 @@ func optionHandler(page):
 	if opts.has("sfx") or opts.has("music"):
 		playPageSounds(page)
 	
-	if opts.has("pauseTime") or opts.has("decisionTime"):
-		handlePageTimers(page)
-	
 	if page.choices.size() != 0:
 		for i in page.choices.size():
 			var nButton = Button.new()
@@ -102,18 +88,6 @@ func optionHandler(page):
 			nButton.connect("pressed", self, "_on_choice_pressed", [page.choices.keys()[i]])
 		
 		next_Button.hide()
-
-func handlePageTimers(page):
-	if page.options.keys().has("pauseTime"):
-		var pTime = page.options.pauseTime
-		pauseTimer.set_wait_time(pTime)
-		pauseTimer.start()
-		next_Button.hide()
-	
-	if page.options.keys().has("decisionTime"):
-		var pTime = page.options.decisionTime
-		decisionTimer.set_wait_time(pTime)
-		decisionTimer.start()
 
 func playPageSounds(page):
 	if page.options.keys().has("sfx"):
@@ -126,15 +100,6 @@ func playPageSounds(page):
 		var stream_bg = load(page.options.music)
 		bgmStream.set_stream(stream_bg)
 		bgmStream.play()
-
-
-func _on_decision_timeout():
-	#TODO
-	pass
-
-func _on_pause_timeout():
-	#TODO
-		pass
 
 func open():
 	next_Button.show();
