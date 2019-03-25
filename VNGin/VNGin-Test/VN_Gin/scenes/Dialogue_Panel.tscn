@@ -39,10 +39,11 @@ uppercase = true
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 38.0
-margin_top = -65.0
-margin_right = -111.0
-margin_bottom = -16.0
+margin_left = 29.0
+margin_top = -68.0
+margin_right = -29.0
+margin_bottom = -27.0
+alignment = 1
 
 [node name="TextLabel" type="RichTextLabel" parent="NinePatchRect"]
 anchor_right = 1.0
@@ -61,9 +62,9 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -106.0
-margin_top = -67.0
+margin_left = -174.0
+margin_top = -65.0
 margin_right = -26.0
-margin_bottom = -17.0
+margin_bottom = -27.0
 text = "Next"
 
