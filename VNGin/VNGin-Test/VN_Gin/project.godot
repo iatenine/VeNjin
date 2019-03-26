@@ -18,6 +18,13 @@ _global_script_class_icons={
 config/name="VN_Gin"
 run/main_scene="res://scenes/Main.tscn"
 
+[display]
+
+window/size/resizable=false
+window/size/borderless=true
+window/stretch/mode="viewport"
+window/stretch/aspect="keep"
+
 [locale]
 
 translations=PoolStringArray(  )

@@ -6,8 +6,8 @@ var story = book.new()
 onready var stage = get_node("Output")
 
 func _ready():
-	var options1 = {"image":"res://images/clara/clara_hit.png"}
-	var options2 = {"image":"res://images/clara/clara.png", "background":"res://images/Environments/coldmountain.png", "sfx":"res://Audio/completetask_0.ogg"}
+	var options1 = {"image":"res://images/CreativeCommons/JustinNichol/Kain.png"}
+	var options2 = {"image":"res://images/CreativeCommons/JustinNichol/Alec.png", "background":"res://images/Environments/coldmountain.png", "sfx":"res://Audio/completetask_0.ogg"}
 	var choices = {0:"Attack", 1:"Greet"}
 	
 	#Establish chapters
