@@ -49,13 +49,19 @@ func showPage(page:Dictionary = story.getPage()):
 	var keys = page.keys()
 	
 	next_Button.show()
-	if(story.isBookEnd()):
-		next_Button.text = "The End"
+	if(story.isLastPage()):
+		next_Button.text = "End of Chapter"
 	
 	#Pages
 	if keys.has("speech"):
 		set_name(page.speaker)
 		set_text(page.speech)
+		
+		if page.options.keys().has("pause"):
+			next_Button.hide()
+			yield(get_tree().create_timer(page.options.pause), "timeout")
+			next_Button.show()
+		
 		optionHandler(page)
 	
 	#Chapter Changes
@@ -101,9 +107,6 @@ func playPageSounds(page):
 		bgmStream.set_stream(stream_bg)
 		bgmStream.play()
 
-func open():
-	next_Button.show();
-	
 func set_text(var t):
 	speechBox.set_text(t);
 	speechBox.show()

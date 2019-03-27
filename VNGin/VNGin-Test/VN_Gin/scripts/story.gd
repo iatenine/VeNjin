@@ -4,7 +4,7 @@ enum {CHAPTER, PAGE, OPTIONS, CHOICES}
 
 const chapterFeatures = ["name", "number", "path"]
 const pageFeatures = ["speaker", "speech", "options", "choices", "chapterEnd", "getData"]
-const optionList = ["image", "music", "sfx", "background"]
+const optionList = ["image", "music", "sfx", "background", "pause"]
 
 #First int indicates current index by chapter, 2nd int denotes active page of dialogue
 var path = 0

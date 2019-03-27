@@ -24,10 +24,11 @@ margin_bottom = 226.0
 
 [node name="NameLabel" type="Label" parent="NinePatchRect"]
 anchor_right = 1.0
-margin_left = 26.0
+margin_left = 27.0
 margin_top = 13.0
-margin_right = -23.0
+margin_right = -22.0
 margin_bottom = 46.0
+size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
 custom_styles/normal = ExtResource( 1 )
 custom_fonts/font = ExtResource( 2 )
