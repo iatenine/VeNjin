@@ -3,7 +3,6 @@
 [ext_resource path="res://fonts/SegoeUI-Bold.ttf" type="DynamicFontData" id=1]
 
 [resource]
-size = 55
-extra_spacing_top = 7
+size = 14
 font_data = ExtResource( 1 )
 

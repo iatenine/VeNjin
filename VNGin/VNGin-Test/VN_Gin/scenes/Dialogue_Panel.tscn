@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scenes/label_style.tres" type="StyleBox" id=1]
+[ext_resource path="res://fonts/SegoeUIBold.tres" type="DynamicFont" id=2]
+[ext_resource path="res://fonts/SegoeUI.tres" type="DynamicFont" id=3]
 
 [node name="Dialogue_Panel" type="Panel" groups=[
 "dPanel",
@@ -23,14 +25,16 @@ margin_bottom = 226.0
 [node name="NameLabel" type="Label" parent="NinePatchRect"]
 anchor_right = 1.0
 margin_left = 26.0
-margin_top = 16.0
-margin_right = -21.0
-margin_bottom = 42.0
-size_flags_horizontal = 15
+margin_top = 13.0
+margin_right = -23.0
+margin_bottom = 46.0
 size_flags_stretch_ratio = 3.0
 custom_styles/normal = ExtResource( 1 )
+custom_fonts/font = ExtResource( 2 )
 text = "Name
 "
+align = 1
+valign = 3
 autowrap = true
 clip_text = true
 uppercase = true
@@ -53,8 +57,11 @@ margin_right = -21.0
 margin_bottom = 152.0
 size_flags_horizontal = 11
 custom_styles/normal = ExtResource( 1 )
-text = "DIALOGUE
-"
+custom_fonts/normal_font = ExtResource( 3 )
+text = "The quick brown fox jumps over the lazy dog
+
+The quick brown fox jumps over the lazy dog
+The quick brown fox jumps over the lazy dog"
 override_selected_font_color = true
 
 [node name="NextButton" type="Button" parent="NinePatchRect"]
