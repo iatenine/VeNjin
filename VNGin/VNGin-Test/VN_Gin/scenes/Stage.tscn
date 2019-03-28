@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scripts/VisCompManager.gd" type="Script" id=1]
-[ext_resource path="res://images/Environments/coldmountain.png" type="Texture" id=2]
+[ext_resource path="res://images/CC0/Environments/coldmountain.png" type="Texture" id=2]
 [ext_resource path="res://scenes/Dialogue_Panel.tscn" type="PackedScene" id=3]
 
 [node name="Output" type="Control"]
@@ -27,15 +27,14 @@ expand = true
 [node name="CharacterImage" type="TextureRect" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 280.0
-margin_top = 19.0
-margin_right = -330.0
-margin_bottom = -189.0
+margin_left = 282.0
+margin_top = 26.0
+margin_right = -328.0
+margin_bottom = -160.0
 expand = true
 stretch_mode = 6
 
 [node name="Dialogue_Panel" parent="." instance=ExtResource( 3 )]
-modulate = Color( 0, 1, 0.811765, 0.784314 )
 margin_left = 6.0
 margin_top = -206.0
 margin_right = -2.0

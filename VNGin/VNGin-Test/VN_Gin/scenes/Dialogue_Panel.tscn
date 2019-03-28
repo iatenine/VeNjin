@@ -7,8 +7,7 @@
 [node name="Dialogue_Panel" type="Panel" groups=[
 "dPanel",
 ]]
-modulate = Color( 0, 1, 0.8125, 1 )
-self_modulate = Color( 0.0528717, 0.504154, 0.902344, 0.0276078 )
+self_modulate = Color( 1, 1, 1, 0 )
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -24,10 +23,10 @@ margin_bottom = 226.0
 
 [node name="NameLabel" type="Label" parent="NinePatchRect"]
 anchor_right = 1.0
-margin_left = 27.0
-margin_top = 13.0
-margin_right = -22.0
-margin_bottom = 46.0
+margin_left = 29.0
+margin_top = 12.0
+margin_right = -791.0
+margin_bottom = 45.0
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
 custom_styles/normal = ExtResource( 1 )
@@ -52,9 +51,9 @@ alignment = 1
 
 [node name="TextLabel" type="RichTextLabel" parent="NinePatchRect"]
 anchor_right = 1.0
-margin_left = 26.0
+margin_left = 29.0
 margin_top = 46.0
-margin_right = -21.0
+margin_right = -18.0
 margin_bottom = 152.0
 size_flags_horizontal = 11
 custom_styles/normal = ExtResource( 1 )
@@ -70,9 +69,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -174.0
+margin_left = -168.0
 margin_top = -65.0
-margin_right = -26.0
+margin_right = -20.0
 margin_bottom = -27.0
+custom_styles/normal = ExtResource( 1 )
 text = "Next"
 

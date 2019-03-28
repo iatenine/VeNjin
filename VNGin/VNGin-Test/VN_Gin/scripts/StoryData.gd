@@ -6,9 +6,9 @@ var story = book.new()
 onready var stage = get_node("Output")
 
 func _ready():
-	var options1 = {"image":"res://images/CreativeCommons/JustinNichol/Kain.png", "pause":2.0}
-	var options2 = {"image":"res://images/CreativeCommons/JustinNichol/Alec.png", "background":"res://images/Environments/coldmountain.png", "sfx":"res://Audio/completetask_0.ogg"}
-	var optionsMusic = {"music":"res://Audio/song18.ogg"}
+	var options1 = {"image":"CreativeCommons/JustinNichol/Kain", "pause":2.0}
+	var options2 = {"image":"CreativeCommons/JustinNichol/Alec", "background":"CC0/Environments/coldmountain", "sfx":"completetask_0"}
+	var optionsMusic = {"music":"song18"}
 	var choices = {0:"Pauses and character shifts", 1:"Background music"}
 	
 	#Establish chapters

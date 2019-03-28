@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/cloudsinthedesert.png-5c7c828c1d2b523f4fe04387db69eaed.stex"
+path="res://.import/wizardtower.png-a2b475f0f0bb709db7e661448702ec7c.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://images/Environments/cloudsinthedesert.png"
-dest_files=[ "res://.import/cloudsinthedesert.png-5c7c828c1d2b523f4fe04387db69eaed.stex" ]
+source_file="res://images/CC0/Environments/wizardtower.png"
+dest_files=[ "res://.import/wizardtower.png-a2b475f0f0bb709db7e661448702ec7c.stex" ]
 
 [params]
 

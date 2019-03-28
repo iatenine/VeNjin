@@ -6,6 +6,11 @@ const chapterFeatures = ["name", "number", "path"]
 const pageFeatures = ["speaker", "speech", "options", "choices", "chapterEnd", "getData"]
 const optionList = ["image", "music", "sfx", "background", "pause"]
 
+const imgPrefix = "res://images/"
+const musicPrefix = "res://Audio/"
+const imgSuffix = ".png"
+const musicSuffix = ".ogg"
+
 #First int indicates current index by chapter, 2nd int denotes active page of dialogue
 var path = 0
 var bookmark = Vector2(0, 0)    setget reset, getBookmark
@@ -38,9 +43,15 @@ func addPage(spch:String, spker:String = "", optList:Dictionary = {}, choiceList
 	if validDict(optList, OPTIONS):
 		getChapter().append(newPage)
 		if newPage.options.keys().has("background"):
+			newPage.options.background = imgPrefix + newPage.options.background + imgSuffix
 			textureBuffer.append(load(newPage.options.background))
 		if newPage.options.keys().has("image"):
+			newPage.options.image = imgPrefix + newPage.options.image + imgSuffix
 			textureBuffer.append(load(newPage.options.image))
+		if newPage.options.keys().has("music"):
+			newPage.options.music = musicPrefix + newPage.options.music + musicSuffix
+		if newPage.options.keys().has("sfx"):
+			newPage.options.sfx = musicPrefix + newPage.options.sfx + musicSuffix
 	else:
 		print("Dict not valid")
 	return true
