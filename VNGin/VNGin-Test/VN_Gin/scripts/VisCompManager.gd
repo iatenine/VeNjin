@@ -7,11 +7,14 @@ extends Node
 #dPanel, character and background images must be specified in editor
 #story data must be passed via loadStory() function
 
+export (float) var TITLE_TIME = 1.5
 const book = preload("res://scripts/story.gd")
 
+export (NodePath) var foreground_img
 export (NodePath) var background_img
 export (NodePath) var character_img
 export (NodePath) var dPanel
+export (NodePath) var animPlayer
 
 
 var speechBox            #Box for displaying dialogue
@@ -27,12 +30,14 @@ var sfxStream = AudioStreamPlayer.new()
 
 func _ready():
 	dPanel = get_node(str(dPanel) + "/NinePatchRect")
+	foreground_img = get_node(foreground_img)
 	background_img = get_node(background_img)
 	character_img = get_node(character_img)
 	speechBox = dPanel.get_node("TextLabel")
 	nameBox = dPanel.get_node("NameLabel")
 	next_Button = dPanel.get_node("NextButton")
 	options_Container = dPanel.get_node("HBoxContainer")
+	animPlayer = get_node(animPlayer)
 	
 	#Add children
 	add_child(sfxStream)
@@ -57,43 +62,83 @@ func showPage(page:Dictionary = story.getPage()):
 		set_name(page.speaker)
 		set_text(page.speech)
 		
+		optionHandler(page)
+		
 		if page.options.keys().has("pause"):
 			next_Button.hide()
 			yield(get_tree().create_timer(page.options.pause), "timeout")
 			next_Button.show()
-		
-		optionHandler(page)
 	
 	#Chapter Changes
 	elif keys.has("number"):
-		set_name("Chapter " + str(page.number))
-		set_text(page.name)
+		dPanel.hide()
+		foreground_img.show()
+		foreground_img.set_Title("Chapter " + str(page.number) + "\n" +page.name)
+		
+		#Fade-in
+		fadeAnim("FG")
+		yield(animPlayer, "animation_finished")
+		
+		#Preload background for next page
+		var nextPage = story.getPage(story.getBookmark() + Vector2(0, 1))
+		if nextPage != null:
+			optionHandler(nextPage, true)
+		
+		#Pause + fade-out
+		yield(get_tree().create_timer(TITLE_TIME), "timeout")
+		fadeAnim("FG", true)
+		yield(animPlayer, "animation_finished")
+		
+		#Ensure content continues flowing
+		dPanel.show()
+		foreground_img.hide()
+		_on_next_pressed()
 	else:
 		pass
 
-func optionHandler(page):
+func fadeAnim(target:String, backwards:bool = false):
+	var animName
+	
+	match(target):
+		"CHARACTER":
+			animName = "character_fade_in"
+		"BG":
+			animName = "bg_fade_in"
+		"FG":
+			animName = "fg_fade_in"
+		_:
+			print("Animation target: " + target + " not valid")
+	
+	if !backwards:
+		animPlayer.play(animName)
+	else:
+		animPlayer.play_backwards(animName)
+
+func optionHandler(page, buffer:bool = false):
 	var opts = page.options
+	
 	
 	if opts.has("background"):
 		var tex = load(page.options.background)
 		set_background(tex)
 	
-	if opts.has("image"):
-		var tex = load(page.options.image)
-		set_image(tex)
-	
-	if opts.has("sfx") or opts.has("music"):
-		playPageSounds(page)
-	
-	if page.choices.size() != 0:
-		for i in page.choices.size():
-			var nButton = Button.new()
-			nButton.text = page.choices.values()[i]
-			add_button(nButton)
-			
-			nButton.connect("pressed", self, "_on_choice_pressed", [page.choices.keys()[i]])
+	if !buffer:
+		if opts.has("image"):
+			var tex = load(page.options.image)
+			set_image(tex)
 		
-		next_Button.hide()
+		if opts.has("sfx") or opts.has("music"):
+			playPageSounds(page)
+		
+		if page.choices.size() != 0:
+			for i in page.choices.size():
+				var nButton = Button.new()
+				nButton.text = page.choices.values()[i]
+				add_button(nButton)
+				
+				nButton.connect("pressed", self, "_on_choice_pressed", [page.choices.keys()[i]])
+		
+			next_Button.hide()
 
 func playPageSounds(page):
 	if page.options.keys().has("sfx"):

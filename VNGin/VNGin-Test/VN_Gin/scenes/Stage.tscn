@@ -1,8 +1,58 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://scripts/VisCompManager.gd" type="Script" id=1]
-[ext_resource path="res://images/CC0/Environments/coldmountain.png" type="Texture" id=2]
-[ext_resource path="res://scenes/Dialogue_Panel.tscn" type="PackedScene" id=3]
+[ext_resource path="res://scenes/Dialogue_Panel.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/Foreground.tscn" type="PackedScene" id=3]
+
+[sub_resource type="NoiseTexture" id=5]
+
+[sub_resource type="Animation" id=4]
+resource_name = "bg_fade_in"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Background:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=3]
+resource_name = "character_fade_in"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("CharacterImage:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
+
+[sub_resource type="Animation" id=1]
+resource_name = "fg_fade_in"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/path = NodePath("Foreground:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
+}
 
 [node name="Output" type="Control"]
 anchor_right = 1.0
@@ -10,9 +60,11 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource( 1 )
+foreground_img = NodePath("Foreground")
 background_img = NodePath("Background")
 character_img = NodePath("CharacterImage")
 dPanel = NodePath("Dialogue_Panel")
+animPlayer = NodePath("Animations")
 
 [node name="Background" type="TextureRect" parent="."]
 anchor_right = 1.0
@@ -21,7 +73,7 @@ margin_left = -1.0
 margin_right = -1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture = ExtResource( 2 )
+texture = SubResource( 5 )
 expand = true
 
 [node name="CharacterImage" type="TextureRect" parent="."]
@@ -34,9 +86,17 @@ margin_bottom = -160.0
 expand = true
 stretch_mode = 6
 
-[node name="Dialogue_Panel" parent="." instance=ExtResource( 3 )]
+[node name="Dialogue_Panel" parent="." instance=ExtResource( 2 )]
 margin_left = 6.0
 margin_top = -206.0
 margin_right = -2.0
 margin_bottom = -5.0
+
+[node name="Foreground" parent="." instance=ExtResource( 3 )]
+modulate = Color( 1, 1, 1, 0 )
+
+[node name="Animations" type="AnimationPlayer" parent="."]
+anims/bg_fade_in = SubResource( 4 )
+anims/character_fade_in = SubResource( 3 )
+anims/fg_fade_in = SubResource( 1 )
 
