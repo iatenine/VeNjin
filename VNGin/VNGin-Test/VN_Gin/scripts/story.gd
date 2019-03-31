@@ -14,8 +14,8 @@ const musicSuffix = ".ogg"
 #First int indicates current index by chapter, 2nd int denotes active page of dialogue
 var path = 0
 var bookmark = Vector2(0, 0)    setget reset, get_bookmark
-var lastChapter = 0
 var chapters = []
+var branchMap = []        #Array of chapter[] coords, x-index for number, y-index for path
 var textureBuffer = []    #Hold textures in memory to reduce load times when drawn to screen
 
 func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
@@ -25,11 +25,11 @@ func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
 		path = chapBranch,
 	}
 	
-	if chapNumber > lastChapter:
-		lastChapter = chapNumber
-	
 	newArray.append(newChapter)
 	chapters.append(newArray)
+	
+	chapters.sort_custom(MyCustomSorter, "sort")
+	update_branch_map(newChapter)
 
 #Creates and appends a new page of dialogue to the current chapter's path
 func add_page(spch:String, spker:String = "", optList:Dictionary = {}, choiceList:Dictionary = {}):
@@ -56,6 +56,15 @@ func add_page(spch:String, spker:String = "", optList:Dictionary = {}, choiceLis
 		print("Dict not valid")
 	return true
 
+func get_all_chapter_paths(find_chapter:int) -> Array:
+	var ret_arr = []
+	
+	for i in range(0, chapters.size()):
+		if get_chapter_index(i).number == find_chapter:
+			ret_arr.append(get_chapter_index(i).path)
+	
+	return ret_arr
+
 func get_bookmark() -> Vector2:
 	return bookmark
 
@@ -64,7 +73,12 @@ func get_chapter(chap:int = bookmark.x):
 		return false
 	return chapters[chap]
 
-#Returns dict with chapter properties
+func get_chapter_by_coords(coords:Vector2) -> int:
+	return branchMap.bsearch(coords)
+
+func get_chapter_pos(chap = get_chapter()) -> int:
+	return chapters.bsearch(chap)
+
 func get_chapter_index(chap:int = bookmark.x) -> Dictionary:
 	return get_chapter(chap)[0]
 
@@ -80,14 +94,32 @@ func get_toc() -> Array:
 	
 	return ret
 
+func get_unique_chapter_nums() -> Array:
+	var x = 0
+	var hold = []
+	hold.resize(chapters.size())
+	
+	for i in range(0, chapters.size()):
+		if hold.find(get_chapter_index(i).number) == -1:
+			hold[x] = get_chapter_index(i).number
+			x += 1
+	
+	hold.sort()
+	return hold
+
 func is_book_end() -> bool:
 	if is_last_chapter() == true and is_last_page() == true:
 		return true
 	return false
 
+#TODO: Make functional with paths that don't reach the highest chapter number
 func is_last_chapter() -> bool:
-	if bookmark.x == chapters.size()-1:
+	var all_chapters = get_unique_chapter_nums()
+	var last_index = all_chapters.size()-1
+	
+	if get_chapter_index().number == all_chapters[last_index]:
 		return true
+	
 	return false
 
 func is_last_page() -> bool:
@@ -115,7 +147,6 @@ func move_path(newBranch:int) -> bool:
 	
 	return false
 
-#Return false if there isn't a next chapter
 func next_chapter() -> bool:
 	if is_last_chapter():
 		return false
@@ -163,6 +194,15 @@ func turn_page() -> bool:
 	
 	return false
 
+func update_branch_map(chapter):
+	var index = chapters.bsearch(chapter)
+	var coords = Vector2(chapter.number, chapter.path)
+	
+	if branchMap.size() <= index:
+		branchMap.resize(index+1)
+	
+	branchMap[index] = Vector2(coords.x, coords.y)
+
 func valid_dict(dict:Dictionary, dictType):
 	var ret = true
 	var compDict    #Actually an array of strings
@@ -190,3 +230,11 @@ func valid_dict(dict:Dictionary, dictType):
 				break
 	
 	return ret
+
+class MyCustomSorter:
+	static func sort(small, big):
+		if small[0].number < big[0].number:
+			return true
+		elif small[0].number == big[0].number and small[0].path < big[0].path:
+			return true
+		return false

@@ -13,8 +13,10 @@ func _ready():
 	
 	#Establish chapters
 	story.add_chapter("VN Gin Test Run", 1)
-	#Alternate paths need a separate "chapter" that shares a number but not a path
-	story.add_chapter("Diplomacy", 1, 1)
+	story.add_chapter("Diplomacy", 2, 30)
+	story.add_chapter("Diplomacy", 2, 28)
+	story.add_chapter("Diplomacy", 4, 30)
+	story.add_chapter("Diplomacy", 6, 30)
 	
 	#Write chapter 1
 	story.add_page("Hi!\nWhat would you like me to demonstrate?\nWe're using branching storylines to give you these options", "Stewie", options2, choices)
@@ -23,7 +25,14 @@ func _ready():
 	story.move_path(1)
 	story.add_page("Enjoy the music, you can end the demo at any time by clicking \"end of chapter\"", "Stewie", optionsMusic)
 	
+	story.set_chapter(2)
+	story.is_last_chapter()
+	
 	#Story must be reset to beginning and loaded to the VisCompManager
+	var print_arr = story.get_toc()
+	for i in range(0, print_arr.size()):
+		print(print_arr[i])
+	
 	story.reset()
 	stage.load_story(story)
 	
