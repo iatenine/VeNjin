@@ -29,7 +29,7 @@ func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
 	chapters.append(newArray)
 	
 	chapters.sort_custom(MyCustomSorter, "sort")
-	update_branch_map(newChapter)
+	update_branch_map()
 
 #Creates and appends a new page of dialogue to the current chapter's path
 func add_page(spch:String, spker:String = "", optList:Dictionary = {}, choiceList:Dictionary = {}):
@@ -77,7 +77,12 @@ func get_chapter_by_coords(coords:Vector2) -> int:
 	return branchMap.bsearch(coords)
 
 func get_chapter_pos(chap = get_chapter()) -> int:
-	return chapters.bsearch(chap)
+	for i in range(0, chapters.size()):
+		if chapters[i] == chap:
+			return i
+	
+	print("E: Could not find chapter: ", chap[0])
+	return -1
 
 func get_chapter_index(chap:int = bookmark.x) -> Dictionary:
 	return get_chapter(chap)[0]
@@ -114,11 +119,22 @@ func is_book_end() -> bool:
 
 #TODO: Make functional with paths that don't reach the highest chapter number
 func is_last_chapter() -> bool:
-	var all_chapters = get_unique_chapter_nums()
-	var last_index = all_chapters.size()-1
 	
-	if get_chapter_index().number == all_chapters[last_index]:
+	if get_chapter_pos() == chapters.size()-1:
 		return true
+	
+	var ref_Vector = Vector2(get_chapter_index().number, get_chapter_index().path)
+	var start_pos = get_chapter_by_coords(ref_Vector)+1
+	
+	for i in range(start_pos, branchMap.size()):
+		if branchMap[i].y != ref_Vector.y:
+			if i != branchMap.size()-1:     #Why does this break when converted to an 'and' statement?
+				continue     #Only continue if not at end of loop
+		else:
+			return false
+		
+		if i == branchMap.size()-1:
+			return true       #End of path reached, returning true
 	
 	return false
 
@@ -175,7 +191,6 @@ func prev_chapter() -> bool:
 
 func reset(newLoc:Vector2 = Vector2(0, 0)):
 	bookmark = newLoc
-	path = 0
 
 func set_chapter(newChap:int) -> bool:
 	if newChap == clamp(float(newChap), 0, float(chapters.size())):
@@ -194,14 +209,16 @@ func turn_page() -> bool:
 	
 	return false
 
-func update_branch_map(chapter):
-	var index = chapters.bsearch(chapter)
-	var coords = Vector2(chapter.number, chapter.path)
+func update_branch_map():
+	var temp_arr = chapters.duplicate(true)
+	var coords
 	
-	if branchMap.size() <= index:
-		branchMap.resize(index+1)
+	if branchMap.size() <= temp_arr.size():
+		branchMap.resize(temp_arr.size())
 	
-	branchMap[index] = Vector2(coords.x, coords.y)
+	for i in range(0, chapters.size()):
+		coords = Vector2(get_chapter_index(i).number, get_chapter_index(i).path)
+		branchMap[i] = coords
 
 func valid_dict(dict:Dictionary, dictType):
 	var ret = true
@@ -236,5 +253,12 @@ class MyCustomSorter:
 		if small[0].number < big[0].number:
 			return true
 		elif small[0].number == big[0].number and small[0].path < big[0].path:
+			return true
+		return false
+	
+	static func sortPaths(small, big):
+		if small.x < big.x:
+			return true
+		elif small.x == big.x and small.y < big.y:
 			return true
 		return false

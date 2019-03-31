@@ -12,10 +12,10 @@ func _ready():
 	var choices = {0:"Pauses and character shifts", 1:"Background music"}
 	
 	#Establish chapters
-	story.add_chapter("VN Gin Test Run", 1)
+	story.add_chapter("VN Gin Test Run", 1) #Last chapter - 0
 	story.add_chapter("Diplomacy", 2, 30)
-	story.add_chapter("Diplomacy", 2, 28)
-	story.add_chapter("Diplomacy", 4, 30)
+	story.add_chapter("Difference", 4, 30) #Not last chapter - 2
+	story.add_chapter("Diplomacy", 6, 28) #Last chapter - 3
 	story.add_chapter("Diplomacy", 6, 30)
 	
 	#Write chapter 1
@@ -25,14 +25,17 @@ func _ready():
 	story.move_path(1)
 	story.add_page("Enjoy the music, you can end the demo at any time by clicking \"end of chapter\"", "Stewie", optionsMusic)
 	
+	# True, False, True, True
+	story.set_chapter(0)
+	print(story.is_last_chapter())
 	story.set_chapter(2)
-	story.is_last_chapter()
+	print(story.is_last_chapter())
+	story.set_chapter(3)
+	print(story.is_last_chapter())
+	story.set_chapter(4)
+	print(story.is_last_chapter())
 	
-	#Story must be reset to beginning and loaded to the VisCompManager
-	var print_arr = story.get_toc()
-	for i in range(0, print_arr.size()):
-		print(print_arr[i])
-	
+	#Story must be reset to beginning and loaded to the VisCompManager	
 	story.reset()
 	stage.load_story(story)
 	
