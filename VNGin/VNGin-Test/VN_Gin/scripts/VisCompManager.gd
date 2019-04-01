@@ -7,7 +7,7 @@ extends Node
 #dPanel, character and background images must be specified in editor
 #story data must be passed via load_story() function
 
-export (float) var TITLE_TIME = 1.5
+export (float) var TITLE_TIME = 0
 const book = preload("res://scripts/story.gd")
 
 export (NodePath) var foreground_img
@@ -29,9 +29,19 @@ var bgmStream = AudioStreamPlayer.new()
 var sfxStream = AudioStreamPlayer.new()
 
 func _on_choice_pressed(selection):
-	if story.move_path(selection):
-		clear_inputs()
-		_on_next_pressed()
+	var key = selection.keys()[0]
+	var value = selection.values()[0]
+	
+	if typeof(key) == TYPE_INT:
+		if !story.move_path(key):
+			print("E: Could not move story to path: ", selection)
+	elif typeof(key) == TYPE_STRING:
+		if story.get_data(key) != null:
+			print("Warning: Overwriting previously written value: ", story.get_data(key))
+		story.add_data(key, value)
+	
+	clear_inputs()
+	_on_next_pressed()
 
 func _on_next_pressed():
 	if story != null:
@@ -121,10 +131,10 @@ func option_handler(page, buffer:bool = false):
 		if page.choices.size() != 0:
 			for i in page.choices.size():
 				var nButton = Button.new()
-				nButton.text = page.choices.values()[i]
+				nButton.text = page.choices.keys()[i]
 				add_button(nButton)
 				
-				nButton.connect("pressed", self, "_on_choice_pressed", [page.choices.keys()[i]])
+				nButton.connect("pressed", self, "_on_choice_pressed", [{page.choices.values()[i]:page.choices.keys()[i]}])
 		
 			next_Button.hide()
 
@@ -163,7 +173,10 @@ func show_page(page:Dictionary = story.get_page()):
 	
 	next_Button.show()
 	if(story.is_last_page()):
-		next_Button.text = "End of Chapter"
+		next_Button.text = "Next Chapter"
+	if story.is_last_chapter() and story.is_last_page():
+		next_Button.flat = true
+		next_Button.text = "The End"
 	
 	#Pages
 	if keys.has("speech"):
@@ -181,8 +194,10 @@ func show_page(page:Dictionary = story.get_page()):
 	elif keys.has("number"):
 		dPanel.hide()
 		foreground_img.show()
-		foreground_img.set_Title("Chapter " + str(page.number) + "\n" +page.name)
-		
+		if page.number != 0:
+			foreground_img.set_Title("Chapter " + str(page.number) + "\n" +page.name)
+		else:
+			foreground_img.set_Title("Prologue\n" +page.name)
 		#Fade-in
 		fade_anim("FG")
 		yield(animPlayer, "animation_finished")

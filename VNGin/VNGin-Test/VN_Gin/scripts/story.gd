@@ -1,10 +1,10 @@
 extends Reference
 
-enum {CHAPTER, PAGE, OPTIONS, CHOICES}
+enum {CHAPTER, PAGE, OPTIONS}
 
 const chapterFeatures = ["name", "number", "path"]
-const pageFeatures = ["speaker", "speech", "options", "choices", "chapterEnd", "getData"]
-const optionList = ["image", "music", "sfx", "background", "pause"]
+const pageFeatures = ["speaker", "speech", "options", "choices"]
+const optionList = ["name", "image", "music", "sfx", "background", "pause", "choice_flair"]
 
 const imgPrefix = "res://images/"
 const musicPrefix = "res://Audio/"
@@ -17,8 +17,9 @@ var bookmark = Vector2(0, 0)    setget reset, get_bookmark
 var chapters = []
 var branchMap = []        #Array of chapter[] coords, x-index for number, y-index for path
 var textureBuffer = []    #Hold textures in memory to reduce load times when drawn to screen
+var story_data = {}
 
-func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
+func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0) -> int:
 	var newArray = []
 	var newChapter = {name = chapName,
 		number = chapNumber,
@@ -30,22 +31,42 @@ func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0):
 	
 	chapters.sort_custom(MyCustomSorter, "sort")
 	update_branch_map()
+	
+	return get_chapter_by_coords(Vector2(chapNumber, chapBranch))
+
+func add_data(data_name:String, data):
+	story_data[data_name] = data
+	
+	#Replace all placeholder elements
+	var find = "%" + data_name.to_upper() + "%"
+	var replace = data
+	
+	for i in range(0, chapters.size()):
+		var this_chapter = get_chapter(i)
+		for j in range(1, this_chapter.size()):
+			if this_chapter[j]["speech"].find(find) != -1:
+				this_chapter[j]["speech"] = this_chapter[j]["speech"].replace(find, replace)
+			if this_chapter[j]["speaker"].find(find) != -1:
+				this_chapter[j]["speaker"] = this_chapter[j]["speaker"].replace(find, replace)
 
 #Creates and appends a new page of dialogue to the current chapter's path
-func add_page(spch:String, spker:String = "", optList:Dictionary = {}, choiceList:Dictionary = {}):
+func add_page(spch:String, optList:Dictionary = {}, choiceList:Dictionary = {}):
 	var newPage = {
 		speech = spch,
-		speaker = spker,
 		options = optList,
-		choices = choiceList
+		choices = choiceList,
+		speaker = ""
 	}
+	
+	if optList.has("name"):
+		newPage["speaker"] = optList["name"]
 	
 	if valid_dict(optList, OPTIONS):
 		get_chapter().append(newPage)
 		if newPage.options.keys().has("background"):
 			newPage.options.background = imgPrefix + newPage.options.background + imgSuffix
 			textureBuffer.append(load(newPage.options.background))
-		if newPage.options.keys().has("image"):
+		if newPage.options.keys().has("image") and !newPage.options.image.begins_with(imgPrefix):
 			newPage.options.image = imgPrefix + newPage.options.image + imgSuffix
 			textureBuffer.append(load(newPage.options.image))
 		if newPage.options.keys().has("music"):
@@ -86,6 +107,12 @@ func get_chapter_pos(chap = get_chapter()) -> int:
 
 func get_chapter_index(chap:int = bookmark.x) -> Dictionary:
 	return get_chapter(chap)[0]
+
+func get_data(data_name:String):
+	return story_data.get(data_name)
+
+func get_data_all():
+	return story_data
 
 func get_page(page:Vector2 = bookmark) -> Dictionary:
 	return get_chapter()[page.y]

@@ -4,9 +4,9 @@
 [ext_resource path="res://scenes/Dialogue_Panel.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/Foreground.tscn" type="PackedScene" id=3]
 
-[sub_resource type="NoiseTexture" id=5]
+[sub_resource type="NoiseTexture" id=1]
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=2]
 resource_name = "bg_fade_in"
 length = 2.0
 tracks/0/type = "value"
@@ -38,8 +38,7 @@ tracks/0/keys = {
 "values": [ Color( 1, 1, 1, 0 ), Color( 1, 1, 1, 1 ) ]
 }
 
-[sub_resource type="Animation" id=1]
-resource_name = "fg_fade_in"
+[sub_resource type="Animation" id=4]
 length = 2.0
 tracks/0/type = "value"
 tracks/0/path = NodePath("Foreground:modulate")
@@ -73,7 +72,7 @@ margin_left = -1.0
 margin_right = -1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-texture = SubResource( 5 )
+texture = SubResource( 1 )
 expand = true
 
 [node name="CharacterImage" type="TextureRect" parent="."]
@@ -96,7 +95,7 @@ margin_bottom = -5.0
 modulate = Color( 1, 1, 1, 0 )
 
 [node name="Animations" type="AnimationPlayer" parent="."]
-anims/bg_fade_in = SubResource( 4 )
+anims/bg_fade_in = SubResource( 2 )
 anims/character_fade_in = SubResource( 3 )
-anims/fg_fade_in = SubResource( 1 )
+anims/fg_fade_in = SubResource( 4 )
 
