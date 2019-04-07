@@ -6,6 +6,7 @@ var story = book.new()
 onready var stage = get_node("Output")
 
 func _ready():
+	var player = {"image":"%PLAYER_IMG%", "name":"%PLAYER_NAME%"}
 	var landon = {"image":"CreativeCommons/JustinNichol/Jordan", "name":"Landon"}
 	var hellen = {"image":"CreativeCommons/JustinNichol/Leslie", "name":"Hellen"}
 	var hellen_thinking = hellen.duplicate()
@@ -21,10 +22,9 @@ func _ready():
 	var path_choice = {"Crushing Poverty": 0, "Oppressive Upper-Class":1}
 	
 	story.add_cluster({"player_name":"Hellen"})
-	story.add_cluster({"Motivation":"Riches"})
-	story.add_to_cluster({"Motivation":"Riches"}, [{"Riches":"motivation_title"}])
-	story.add_to_cluster({"player_name":"Hellen"}, [{"Hellen":"player_name"}, {"hellen_img":"player_img"}])
-	story.add_to_cluster({"Motivation":"Riches"}, [{"NewKey":"NewValue"}])
+	story.add_cluster({"player_name":"Landon"})
+	story.add_to_cluster({"player_name":"Landon"}, [{"player_img":"CreativeCommons/JustinNichol/Jordan"}])
+	story.add_to_cluster({"player_name":"Hellen"}, [{"player_img":"CreativeCommons/JustinNichol/Leslie"}])
 	
 	#Establish chapters
 	story.add_chapter("Lady on the Water", 0)
@@ -77,9 +77,9 @@ func _ready():
 	story.add_page("What are you fleeing?", {}, path_choice)
 	
 	#Story paths diverge the moment the player chooses them so final pages must be duplicated
-	story.add_page("More content coming soon, %PLAYER_NAME%")
+	story.add_page("More content coming soon, %PLAYER_NAME%", player)
 	story.move_path(1)
-	story.add_page("More content coming soon, %PLAYER_NAME%")
+	story.add_page("More content coming soon, %PLAYER_NAME%", player)
 	
 	#Story must be reset to beginning and loaded to the VisCompManager	
 	story.reset()

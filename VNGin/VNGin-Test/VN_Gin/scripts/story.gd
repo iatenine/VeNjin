@@ -45,7 +45,7 @@ func add_cluster(id:Dictionary) -> bool:
 
 func add_data(placeholder:String, data):
 	story_data[placeholder] = data
-	update_placeholders(placeholder, data)
+	_update_placeholders()
 
 func add_to_cluster(id:Dictionary, newPairs:Array) -> bool:
 	var cluster_arr = get_cluster(id)
@@ -72,14 +72,15 @@ func add_page(spch:String, optList:Dictionary = {}, choiceList:Dictionary = {}):
 	if optList.has("name"):
 		newPage["speaker"] = optList["name"]
 	
-	if valid_dict(optList, OPTIONS):
+	if _valid_dict(optList, OPTIONS):
 		get_chapter().append(newPage)
 		if newPage.options.keys().has("background"):
 			newPage.options.background = imgPrefix + newPage.options.background + imgSuffix
 			textureBuffer.append(load(newPage.options.background))
 		if newPage.options.keys().has("image") and !newPage.options.image.begins_with(imgPrefix):
 			newPage.options.image = imgPrefix + newPage.options.image + imgSuffix
-			textureBuffer.append(load(newPage.options.image))
+			if newPage.options.image.find("%") == -1:
+				textureBuffer.append(load(newPage.options.image))
 		if newPage.options.keys().has("music"):
 			newPage.options.music = musicPrefix + newPage.options.music + musicSuffix
 		if newPage.options.keys().has("sfx"):
@@ -126,7 +127,7 @@ func get_chapter_index(chap:int = bookmark.x) -> Dictionary:
 
 func get_cluster(id:Dictionary) -> Array:    #Returns reference to the array under this particular id dictionary
 	for i in data_clusters.size():
-		if dict_compare(data_clusters[i][0], id):    #Can't believe I had to write this...
+		if _dict_compare(data_clusters[i][0], id):    #Can't believe I had to write this...
 			return data_clusters[i]
 	return []
 
@@ -156,6 +157,19 @@ func get_unique_chapter_nums() -> Array:
 	for i in range(0, chapters.size()):
 		if hold.find(get_chapter_index(i).number) == -1:
 			hold[x] = get_chapter_index(i).number
+			x += 1
+	
+	hold.sort()
+	return hold
+
+func get_unique_paths() -> Array:
+	var x = 0
+	var hold = []
+	hold.resize(chapters.size())    #Probably excessive
+	
+	for i in range(0, chapters.size()):
+		if hold.find(get_chapter_index(i).path) == -1:
+			hold[x] = get_chapter_index(i).path
 			x += 1
 	
 	hold.sort()
@@ -269,19 +283,46 @@ func update_branch_map():
 		coords = Vector2(get_chapter_index(i).number, get_chapter_index(i).path)
 		branchMap[i] = coords
 
-func update_placeholders(placeholder:String, replace:String):
-	#Replace all placeholder elements
-	var find = "%" + placeholder.to_upper() + "%"
+func _update_placeholders():
+	var trigger = "%"  #Skip every page that doesn't at least have the trigger in it
 	
-	for i in range(0, chapters.size()):
+	for i in range(0, chapters.size()):    #Here we go...
 		var this_chapter = get_chapter(i)
 		for j in range(1, this_chapter.size()):
-			if this_chapter[j]["speech"].find(find) != -1:
-				this_chapter[j]["speech"] = this_chapter[j]["speech"].replace(find, replace)
-			if this_chapter[j]["speaker"].find(find) != -1:
-				this_chapter[j]["speaker"] = this_chapter[j]["speaker"].replace(find, replace)
+			for k in range(0, pageFeatures.size()):
+				if typeof(this_chapter[j][pageFeatures[k]]) == TYPE_STRING:
+					if this_chapter[j][pageFeatures[k]].find(trigger)!= -1:
+						_fill_in_placeholders(this_chapter[j]) #The rabbit hole goes deeper
+						continue   #Avoid redundancies
 
-func valid_dict(dict:Dictionary, dictType):
+func _fill_in_placeholders(pageRef:Dictionary):  #Handles the details of replacing placeholders once a page is isolated
+	for i in story_data.size():
+		var find = story_data.keys()[i]
+		var cluster_arr = get_cluster({find:story_data[find]})
+		for j in range(0, pageFeatures.size()):      #Deep breaths now
+			if typeof(pageRef[pageFeatures[j]]) != TYPE_STRING:
+				#Handle dicts here
+				var opts_ref = pageRef[pageFeatures[j]]
+				var iter_arr = opts_ref.keys()
+				
+				for k in range(0, iter_arr.size()):
+					for l in range(0, cluster_arr.size()):    #We're almost done!
+						find = "%" + cluster_arr[l].keys()[0].to_upper() + "%"
+						var replace = cluster_arr[l].values()[0] 
+						opts_ref[iter_arr[k]] = opts_ref[iter_arr[k]].replace(find, replace)
+				continue
+			
+			if find.find("%") == -1:     #And now to deal with the strings much faster
+				find = "%" + find.to_upper() + "%"
+			var replace = story_data.values()[i]
+			pageRef[pageFeatures[j]] = pageRef[pageFeatures[j]].replace(find, replace)
+
+static func _dict_compare(a:Dictionary, b:Dictionary) -> bool:
+		if a.keys() == b.keys() and a.values() == b.values():
+			return true
+		return false
+
+func _valid_dict(dict:Dictionary, dictType) -> bool:
 	var ret = true
 	var compDict    #Actually an array of strings
 	
@@ -308,11 +349,6 @@ func valid_dict(dict:Dictionary, dictType):
 				break
 	
 	return ret
-
-static func dict_compare(a:Dictionary, b:Dictionary) -> bool:
-		if a.keys()[0] == b.keys()[0] and a.values()[0] == b.values()[0]:
-			return true
-		return false
 
 class MyCustomSorter:
 	static func sort(small, big):
