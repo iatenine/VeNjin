@@ -9,16 +9,22 @@ func _ready():
 	var landon = {"image":"CreativeCommons/JustinNichol/Jordan", "name":"Landon"}
 	var hellen = {"image":"CreativeCommons/JustinNichol/Leslie", "name":"Hellen"}
 	var hellen_thinking = hellen.duplicate()
-	hellen_thinking["pause"] = 1
+	hellen_thinking["pause"] = 0
 	var port_town = {"background":"CreativeCommons/JAP/fortress", "image":"CreativeCommons/JustinNichol/Jordan", "name":"Landon"}
 	
-	var mystery = {"pause":1}
+	var mystery = {"pause":0}
 	var ezekiel = {"image":"CreativeCommons/JustinNichol/Linksvayer", "name":"Ezekiel"}
 	#var optionsMusic = {"music":"song18"}
 	
 	#Player choices must have keys and values inversed to avoid key collisions
 	var player_choice = {"Hellen":"player_name", "Landon":"player_name"}
 	var path_choice = {"Crushing Poverty": 0, "Oppressive Upper-Class":1}
+	
+	story.add_cluster({"player_name":"Hellen"})
+	story.add_cluster({"Motivation":"Riches"})
+	story.add_to_cluster({"Motivation":"Riches"}, [{"Riches":"motivation_title"}])
+	story.add_to_cluster({"player_name":"Hellen"}, [{"Hellen":"player_name"}, {"hellen_img":"player_img"}])
+	story.add_to_cluster({"Motivation":"Riches"}, [{"NewKey":"NewValue"}])
 	
 	#Establish chapters
 	story.add_chapter("Lady on the Water", 0)

@@ -17,6 +17,7 @@ var bookmark = Vector2(0, 0)    setget reset, get_bookmark
 var chapters = []
 var branchMap = []        #Array of chapter[] coords, x-index for number, y-index for path
 var textureBuffer = []    #Hold textures in memory to reduce load times when drawn to screen
+var data_clusters = []    #2D array, each 0th index holds an "id" string and each non-zero element holds a dictionary
 var story_data = {}
 
 func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0) -> int:
@@ -34,20 +35,30 @@ func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0) -> int
 	
 	return get_chapter_by_coords(Vector2(chapNumber, chapBranch))
 
-func add_data(data_name:String, data):
-	story_data[data_name] = data
+func add_cluster(id:Dictionary) -> bool:
+	if cluster_exists(id):
+		return false
+	var new_arr = [1]
+	new_arr[0] = id
+	data_clusters.append(new_arr)
+	return true
+
+func add_data(placeholder:String, data):
+	story_data[placeholder] = data
+	update_placeholders(placeholder, data)
+
+func add_to_cluster(id:Dictionary, newPairs:Array) -> bool:
+	var cluster_arr = get_cluster(id)
+	if cluster_arr == []:
+		return false
 	
-	#Replace all placeholder elements
-	var find = "%" + data_name.to_upper() + "%"
-	var replace = data
-	
-	for i in range(0, chapters.size()):
-		var this_chapter = get_chapter(i)
-		for j in range(1, this_chapter.size()):
-			if this_chapter[j]["speech"].find(find) != -1:
-				this_chapter[j]["speech"] = this_chapter[j]["speech"].replace(find, replace)
-			if this_chapter[j]["speaker"].find(find) != -1:
-				this_chapter[j]["speaker"] = this_chapter[j]["speaker"].replace(find, replace)
+	for i in range(0, newPairs.size()):
+		var newPair = newPairs[i]
+		if typeof(newPair) != TYPE_DICTIONARY:
+			return false
+		cluster_arr.append(newPair)
+	return true
+
 
 #Creates and appends a new page of dialogue to the current chapter's path
 func add_page(spch:String, optList:Dictionary = {}, choiceList:Dictionary = {}):
@@ -76,6 +87,11 @@ func add_page(spch:String, optList:Dictionary = {}, choiceList:Dictionary = {}):
 	else:
 		print("Dict not valid")
 	return true
+
+func cluster_exists(id:Dictionary) -> bool:
+	if get_cluster(id) != []:
+		return true
+	return false
 
 func get_all_chapter_paths(find_chapter:int) -> Array:
 	var ret_arr = []
@@ -108,8 +124,14 @@ func get_chapter_pos(chap = get_chapter()) -> int:
 func get_chapter_index(chap:int = bookmark.x) -> Dictionary:
 	return get_chapter(chap)[0]
 
-func get_data(data_name:String):
-	return story_data.get(data_name)
+func get_cluster(id:Dictionary) -> Array:    #Returns reference to the array under this particular id dictionary
+	for i in data_clusters.size():
+		if dict_compare(data_clusters[i][0], id):    #Can't believe I had to write this...
+			return data_clusters[i]
+	return []
+
+func get_data(placeholder:String):
+	return story_data.get(placeholder)
 
 func get_data_all():
 	return story_data
@@ -247,6 +269,18 @@ func update_branch_map():
 		coords = Vector2(get_chapter_index(i).number, get_chapter_index(i).path)
 		branchMap[i] = coords
 
+func update_placeholders(placeholder:String, replace:String):
+	#Replace all placeholder elements
+	var find = "%" + placeholder.to_upper() + "%"
+	
+	for i in range(0, chapters.size()):
+		var this_chapter = get_chapter(i)
+		for j in range(1, this_chapter.size()):
+			if this_chapter[j]["speech"].find(find) != -1:
+				this_chapter[j]["speech"] = this_chapter[j]["speech"].replace(find, replace)
+			if this_chapter[j]["speaker"].find(find) != -1:
+				this_chapter[j]["speaker"] = this_chapter[j]["speaker"].replace(find, replace)
+
 func valid_dict(dict:Dictionary, dictType):
 	var ret = true
 	var compDict    #Actually an array of strings
@@ -274,6 +308,11 @@ func valid_dict(dict:Dictionary, dictType):
 				break
 	
 	return ret
+
+static func dict_compare(a:Dictionary, b:Dictionary) -> bool:
+		if a.keys()[0] == b.keys()[0] and a.values()[0] == b.values()[0]:
+			return true
+		return false
 
 class MyCustomSorter:
 	static func sort(small, big):
