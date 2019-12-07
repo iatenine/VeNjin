@@ -80,8 +80,9 @@ func _ready():
 	story.add_page("More content coming soon, %PLAYER_NAME%", player)
 	story.move_path(1)
 	story.add_page("More content coming soon, %PLAYER_NAME%", player)
+	story.add_chapter("New Dawn", 2, 0)
 	
-	#Story must be reset to beginning and loaded to the VisCompManager	
+	#Story must be reset to beginning and loaded to the VisCompManager
 	story.reset()
 	stage.load_story(story)
 	

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" href="api-style.css" />
+</head>
+<table>
+<thead>
+	<th>Return Type</th>
+	<th>Name</th>
+	<th>Arguments</th>
+	<th>Description</th>
+</thead>
+	<tr>
+		<td>Vector2</td>
+		<td>add_chapter()</td>		
+		<td>
+			<b>String</b> chapter_name <br>
+			<b>int</b> chapNumber = 0 <br>
+			<b>int</b> chapBranch = 0
+		</td>
+		<td>Adds chapter to the end of the story so far by default but position may be specified as chapNumber or branch specified if storyline is branching and there are multiple 
+		chapters with the same number (linear stories should simply leave all branches the default value of 0). Returns the x,y axis of where the story was added if successful</td>
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>add_page()</td>
+		<td>	
+			<b>String</b> spch <br>
+			<b>Dictionary</b> optList <br>
+			<b>Dictionary</b> choiceList = {} 
+		</td>
+		<td>Adds a page to the current chapter with the spch displayed. A list of <a href="blahblah">options</a> and <a href="blah">choices</a> may be specified. Will not add invalid
+		dictionary entries from the optList but should always return true regardless</td>
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>add_cluster()</td>
+		<td><b>Dictionary</b> id</td>
+		<td>Adds a <a href="blah">data cluster</a> to the story. Returns false if one already exists, otherwise returns true</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>add_to_cluster()</td>
+		<td>
+			<b>Dictionary</b> id <br>
+			<b>Dictionary</b> newPairs
+		</td>
+		<td>Adds the dictionary of newPairs to the <a href="blah">data cluster</a> specified in id</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>cluster_exists()</td>
+		<td><b>Dictionary</b> id</td>
+		<td>Returns true if cluster matching the passed id exists, otherwise false</td>	
+	</tr>
+	<tr>
+		<td>Array</td>
+		<td>get_all_chapter_paths</td>
+		<td><b>int</b> find_chapter</td>
+		<td>Returns an array of all paths that exist for the specified chapter</td>	
+	</tr>
+	<tr>
+		<td>Vector2</td>
+		<td>get_bookmark()</td>
+		<td></td>
+		<td>Returns the x-y coordinates of the story's current position (x = chapter number, y = path)</td>	
+	</tr>
+	<tr>
+		<td>Variant</td>
+		<td>get_chapter()</td>
+		<td><b>int</b> chap = bookmark.x</td>
+		<td>Returns the chapter specified or false if value is out of bounds</td>	
+	</tr>
+	<tr>
+		<td>int</td>
+		<td>get_chapter_by_coords()</td>
+		<td><b>Vector2</b> coords</td>
+		<td>Returns an int that can be passed to <a href="">get_chapter()</a> corresponding to the specified Vector2</td>	
+	</tr>
+	<tr>
+		<td>Dictionary</td>
+		<td>get_chapter_index()</td>
+		<td><b>int</b> chap = bookmark.x</td>
+		<td>Returns the index (Dictionary) of the current or specified chapter</td>	
+	</tr>
+	<tr>
+		<td>Dictionary</td>
+		<td>get_page()</td>
+		<td><b>Vector2</b> page = bookmark</td>
+		<td>Returns dictionary with current or specified page's data</td>	
+	</tr>
+	<tr>
+		<td>Array</td>
+		<td>get_toc()</td>
+		<td></td>
+		<td>Returns array representing table of contents with each element populated by a chapter's index</td>	
+	</tr>
+	<tr>
+		<td>Array</td>
+		<td>get_unique_chapter_nums()</td>
+		<td></td>
+		<td>Returns an array containing only unique chapter numbers, ignoring branching chapters of the same number</td>	
+	</tr>
+	<tr>
+		<td>Array</td>
+		<td>get_unique_paths()</td>
+		<td></td>
+		<td>Returns an array containing each unique path throughout a story</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>is_book_end()</td>
+		<td></td>
+		<td>Returns true if on the very last page of a story</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>is_last_chapter()</td>
+		<td></td>
+		<td>Returns true if on the last chapter</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>is_last_page()</td>
+		<td></td>
+		<td>Returns true if on last page of current chapter</td>	
+	</tr>
+	<tr>
+		<td>void</td>
+		<td>jump_to_page()</td>
+		<td><b>int</b> newPage</td>
+		<td>Moves bookmark to specified page within current chapter</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>move_path</td>
+		<td><b>int</b> newBranch</td>
+		<td>Causes bookmark to follow a different path (storyline branch). Returns false only if unable to do so</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>next_chapter()</td>
+		<td></td>
+		<td>If able to move on to next chapter, does so. If not, returns false (including when at final page)</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>prev_chapter()</td>
+		<td></td>
+		<td>Moves to previous chapter if able, returns false if unable</td>	
+	</tr>
+	<tr>
+		<td>void</td>
+		<td>reset()</td>
+		<td><b>Vector2</b> = (0,0)</td>
+		<td>Resets bookmark to beginning of story (first chapter, default branch) by default or the setter function for the bookmark. Call this after adding story data</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>set_chapter()</td>
+		<td><b>int</b> newChap</td>
+		<td>Sets chapter to specified value if possible, returns false otherwise</td>	
+	</tr>
+	<tr>
+		<td>bool</td>
+		<td>turn_page()</td>
+		<td></td>
+		<td>Moves to next page within the current path if possible, returns false otherwise</td>	
+	</tr>
+	<tr>
+		<td>void</td>
+		<td>update_branch_map()</td>
+		<td></td>
+		<td>cycles through the flat list of chapters and creates a 2-dimensional map of them to make organizing branching timelines easier</td>	
+	</tr>
+</table>
+</body>
+</html>

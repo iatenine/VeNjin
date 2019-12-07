@@ -18,7 +18,7 @@ var chapters = []
 var branchMap = []        #Array of chapter[] coords, x-index for number, y-index for path
 var textureBuffer = []    #Hold textures in memory to reduce load times when drawn to screen
 var data_clusters = []    #2D array, each 0th index holds an "id" string and each non-zero element holds a dictionary
-var story_data = {}
+var story_data = {}       #Dictionaries of placeholder values and what to fill with them
 
 func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0) -> int:
 	var newArray = []
@@ -31,11 +31,11 @@ func add_chapter(chapName:String, chapNumber:int = 0, chapBranch:int = 0) -> int
 	chapters.append(newArray)
 	
 	chapters.sort_custom(MyCustomSorter, "sort")
-	update_branch_map()
+	_update_branch_map()
 	
 	return get_chapter_by_coords(Vector2(chapNumber, chapBranch))
 
-func add_cluster(id:Dictionary) -> bool:
+func add_cluster(id:Dictionary) -> bool:	#Test if Dictionary type can be replaced by String
 	if cluster_exists(id):
 		return false
 	var new_arr = [1]
@@ -43,9 +43,8 @@ func add_cluster(id:Dictionary) -> bool:
 	data_clusters.append(new_arr)
 	return true
 
-func add_data(placeholder:String, data):
+func add_data(placeholder:String, data):	#Deprecated by data_clusters, remove later
 	story_data[placeholder] = data
-	_update_placeholders()
 
 func add_to_cluster(id:Dictionary, newPairs:Array) -> bool:
 	var cluster_arr = get_cluster(id)
@@ -114,7 +113,7 @@ func get_chapter(chap:int = bookmark.x):
 func get_chapter_by_coords(coords:Vector2) -> int:
 	return branchMap.bsearch(coords)
 
-func get_chapter_pos(chap = get_chapter()) -> int:
+func get_chapter_pos(chap = get_chapter()) -> int:	#Figure this shit out
 	for i in range(0, chapters.size()):
 		if chapters[i] == chap:
 			return i
@@ -138,9 +137,10 @@ func get_data_all():
 	return story_data
 
 func get_page(page:Vector2 = bookmark) -> Dictionary:
-	return get_chapter()[page.y]
+	var ret = _fill_in_placeholders(get_chapter()[page.y])
+	return ret
 
-func get_toc() -> Array:
+func get_toc() -> Array:	#Branching storyline support?
 	var ret = []
 	ret.resize(chapters.size())
 	
@@ -167,7 +167,7 @@ func get_unique_paths() -> Array:
 	var hold = []
 	hold.resize(chapters.size())    #Probably excessive
 	
-	for i in range(0, chapters.size()):
+	for i in range(0, chapters.size()):	#Add protection against short highly-fragmented stories
 		if hold.find(get_chapter_index(i).path) == -1:
 			hold[x] = get_chapter_index(i).path
 			x += 1
@@ -252,8 +252,18 @@ func prev_chapter() -> bool:
 	
 	return false
 
-func reset(newLoc:Vector2 = Vector2(0, 0)):
-	bookmark = newLoc
+#TODO: protect from out-of-bounds error
+func reset(new_spot:Vector2 = Vector2(0,0)) -> int:
+	print("chapters " +str(chapters.size()))
+	print("paths: " +str(branchMap.size()))
+	if new_spot.x >= 0 and new_spot.y >= 0:
+		if new_spot.x < chapters.size() - 1 and new_spot.y < branchMap.size() -1:
+			bookmark = new_spot
+			return 0
+		else:
+			return ERR_INVALID_PARAMETER
+	else:
+		return ERR_INVALID_PARAMETER
 
 func set_chapter(newChap:int) -> bool:
 	if newChap == clamp(float(newChap), 0, float(chapters.size())):
@@ -272,7 +282,8 @@ func turn_page() -> bool:
 	
 	return false
 
-func update_branch_map():
+#TODO: Determine plausibility of privatizing function
+func _update_branch_map():
 	var temp_arr = chapters.duplicate(true)
 	var coords
 	
@@ -283,39 +294,38 @@ func update_branch_map():
 		coords = Vector2(get_chapter_index(i).number, get_chapter_index(i).path)
 		branchMap[i] = coords
 
-func _update_placeholders():
-	var trigger = "%"  #Skip every page that doesn't at least have the trigger in it
+func _fill_in_placeholders(pageRef:Dictionary):
+	pageRef = pageRef.duplicate(true)
+	var data_keys = story_data.keys()
 	
-	for i in range(0, chapters.size()):    #Here we go...
-		var this_chapter = get_chapter(i)
-		for j in range(1, this_chapter.size()):
-			for k in range(0, pageFeatures.size()):
-				if typeof(this_chapter[j][pageFeatures[k]]) == TYPE_STRING:
-					if this_chapter[j][pageFeatures[k]].find(trigger)!= -1:
-						_fill_in_placeholders(this_chapter[j]) #The rabbit hole goes deeper
-						continue   #Avoid redundancies
-
-func _fill_in_placeholders(pageRef:Dictionary):  #Handles the details of replacing placeholders once a page is isolated
+	
 	for i in story_data.size():
-		var find = story_data.keys()[i]
+		var find = data_keys[i]
 		var cluster_arr = get_cluster({find:story_data[find]})
-		for j in range(0, pageFeatures.size()):      #Deep breaths now
+		
+		for j in range(0, pageFeatures.size()):
 			if typeof(pageRef[pageFeatures[j]]) != TYPE_STRING:
 				#Handle dicts here
-				var opts_ref = pageRef[pageFeatures[j]]
-				var iter_arr = opts_ref.keys()
+				var opts_ref = pageRef[pageFeatures[j]] #Create ref to dict
+				var iter_arr = opts_ref.keys()          #Create an array corresponding w/ dict keys
 				
 				for k in range(0, iter_arr.size()):
-					for l in range(0, cluster_arr.size()):    #We're almost done!
+					for l in range(0, cluster_arr.size()):
 						find = "%" + cluster_arr[l].keys()[0].to_upper() + "%"
 						var replace = cluster_arr[l].values()[0] 
-						opts_ref[iter_arr[k]] = opts_ref[iter_arr[k]].replace(find, replace)
+						if typeof(opts_ref[iter_arr[k]]) == TYPE_STRING:
+							if opts_ref[iter_arr[k]].find("%"):
+								opts_ref[iter_arr[k]] = opts_ref[iter_arr[k]].replace(find, str(replace))
 				continue
 			
 			if find.find("%") == -1:     #And now to deal with the strings much faster
 				find = "%" + find.to_upper() + "%"
 			var replace = story_data.values()[i]
+			print("values: " + str(replace))
+			
 			pageRef[pageFeatures[j]] = pageRef[pageFeatures[j]].replace(find, replace)
+	
+	return pageRef
 
 static func _dict_compare(a:Dictionary, b:Dictionary) -> bool:
 		if a.keys() == b.keys() and a.values() == b.values():

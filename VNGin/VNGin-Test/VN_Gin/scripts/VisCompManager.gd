@@ -24,6 +24,7 @@ var options_Container    #HBox Container recommended
 
 var story                #null reference until load_story() is called
 
+
 #Audio streams
 var bgmStream = AudioStreamPlayer.new()
 var sfxStream = AudioStreamPlayer.new()
