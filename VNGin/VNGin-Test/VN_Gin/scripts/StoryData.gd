@@ -23,8 +23,8 @@ func _ready():
 	
 	story.add_cluster({"player_name":"Hellen"})
 	story.add_cluster({"player_name":"Landon"})
-	story.add_to_cluster({"player_name":"Landon"}, [{"player_img":"CreativeCommons/JustinNichol/Jordan"}])
-	story.add_to_cluster({"player_name":"Hellen"}, [{"player_img":"CreativeCommons/JustinNichol/Leslie"}])
+	story.add_to_cluster({"player_name":"Landon"}, [{"player_img":"CreativeCommons/JustinNichol/Jordan"}, {"test_str":"This"}])
+	story.add_to_cluster({"player_name":"Hellen"}, [{"player_img":"CreativeCommons/JustinNichol/Leslie"}, {"test_str":"That"}])
 	
 	#Establish chapters
 	story.add_chapter("Lady on the Water", 0)
@@ -77,10 +77,10 @@ func _ready():
 	story.add_page("What are you fleeing?", {}, path_choice)
 	
 	#Story paths diverge the moment the player chooses them so final pages must be duplicated
-	story.add_page("More content coming soon, %PLAYER_NAME%", player)
+	story.add_page("More content coming soon, %PLAYER_NAME% %TEST_STR%", player)
 	story.move_path(1)
-	story.add_page("More content coming soon, %PLAYER_NAME%", player)
-	story.add_chapter("New Dawn", 2, 0)
+	story.add_page("More content coming soon, %PLAYER_NAME% %TEST_STR%", player)
+	#story.add_chapter("New Dawn", 2, 0)
 	
 	#Story must be reset to beginning and loaded to the VisCompManager
 	story.reset()

@@ -29,7 +29,7 @@ var story                #null reference until load_story() is called
 var bgmStream = AudioStreamPlayer.new()
 var sfxStream = AudioStreamPlayer.new()
 
-func _on_choice_pressed(selection):
+func _on_choice_pressed(selection:Dictionary):
 	var key = selection.keys()[0]
 	var value = selection.values()[0]
 	

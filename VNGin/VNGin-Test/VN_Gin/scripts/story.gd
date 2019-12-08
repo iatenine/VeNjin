@@ -43,7 +43,7 @@ func add_cluster(id:Dictionary) -> bool:	#Test if Dictionary type can be replace
 	data_clusters.append(new_arr)
 	return true
 
-func add_data(placeholder:String, data):	#Deprecated by data_clusters, remove later
+func add_data(placeholder:String, data):	#Used by visCompManager
 	story_data[placeholder] = data
 
 func add_to_cluster(id:Dictionary, newPairs:Array) -> bool:
@@ -254,8 +254,6 @@ func prev_chapter() -> bool:
 
 #TODO: protect from out-of-bounds error
 func reset(new_spot:Vector2 = Vector2(0,0)) -> int:
-	print("chapters " +str(chapters.size()))
-	print("paths: " +str(branchMap.size()))
 	if new_spot.x >= 0 and new_spot.y >= 0:
 		if new_spot.x < chapters.size() - 1 and new_spot.y < branchMap.size() -1:
 			bookmark = new_spot
@@ -301,9 +299,15 @@ func _fill_in_placeholders(pageRef:Dictionary):
 	
 	for i in story_data.size():
 		var find = data_keys[i]
+		print("Find values: " + str(find))
 		var cluster_arr = get_cluster({find:story_data[find]})
+		print("cluster_arr: " + str(cluster_arr))
+		print("Search values: " + str(cluster_arr[2].keys()))
+		print("Replace value: " + str(cluster_arr[2].values()))
 		
 		for j in range(0, pageFeatures.size()):
+			#print("iter " + str(j))
+			#print(str(pageRef[pageFeatures[j]]))
 			if typeof(pageRef[pageFeatures[j]]) != TYPE_STRING:
 				#Handle dicts here
 				var opts_ref = pageRef[pageFeatures[j]] #Create ref to dict
@@ -318,12 +322,20 @@ func _fill_in_placeholders(pageRef:Dictionary):
 								opts_ref[iter_arr[k]] = opts_ref[iter_arr[k]].replace(find, str(replace))
 				continue
 			
-			if find.find("%") == -1:     #And now to deal with the strings much faster
-				find = "%" + find.to_upper() + "%"
-			var replace = story_data.values()[i]
-			print("values: " + str(replace))
-			
-			pageRef[pageFeatures[j]] = pageRef[pageFeatures[j]].replace(find, replace)
+			for test in cluster_arr.size():
+				print("Pair to find: " + str(cluster_arr[test].keys()) + ": " + str(cluster_arr[test].values()))
+				
+				find = str(cluster_arr[test].keys())
+				var replace = str(cluster_arr[test].values())
+				find = find.replace("[", "")
+				replace = replace.replace("[", "")
+				find = find.replace("]", "")
+				replace = replace.replace("]", "")
+				find = find.to_upper()
+				if find.find("%") == -1:
+					find = "%" + find + "%"  #Add % signs around those missing them
+				print("Findthis: " + find)
+				pageRef[pageFeatures[j]] = pageRef[pageFeatures[j]].replace(find, replace)
 	
 	return pageRef
 
