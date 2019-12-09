@@ -1,11 +1,17 @@
 html{
   background-color: black;
-  color: white;
+  color: #F0F8FF;
 }
 
 a{
   color: teal;
 }
+
+img{
+  padding-left: 2em;
+  width: 90%;
+}
+
 .visualization{
   display: grid;
   justify-content: end;
@@ -20,7 +26,7 @@ a{
 }
 
 .examples > p{
-  background-color: darkgrey;
+  background-color: Indigo;
 }
 
 .bg{
@@ -47,12 +53,12 @@ a{
 
 table{
 	width: 100%;
-	min-width: 836px;
 	display: block;
+  min-width: 500px;
 }
 
 tr:nth-of-type(odd){
-	background: darkgrey;
+	background: Indigo;
 }
 
 td:nth-of-type(1){
@@ -80,6 +86,21 @@ td:nth-of-type(4){
   padding-top: 1em;
 	display: block;
 	font-weight: bold;
-	min-width: 836px;
 	text-align: center;
+}
+
+@media (max-width:900px){
+  img{
+    padding-left: 0em;
+    width: 100%;
+  }
+}
+
+@media (max-width: 870px){
+  td:nth-of-type(1), td:nth-of-type(3), th:nth-of-type(1), th:nth-of-type(3){
+      display: none;
+  }
+  .examples{
+    margin-left: 0px;
+  }
 }

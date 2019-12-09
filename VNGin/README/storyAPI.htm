@@ -81,6 +81,7 @@
 <aside class = "examples"><i>Example</i>
 <p><b>add_page("Hello", {"name::"???", "image":"Henry_img" "pause":3})</b><br><br> will add a page showing res://images/<i>Henry_img</i>.png saying <i>"Hello!"</i> with the name box populated by <i>"???"</i> with a <i>3</i> second dramatic pause before the player will be able to continue to the next page</p>
 </aside>
+<img src="page-elements.png">
 
 <h2 id = "choices_details">How to use choices</h2>
 <p>A choice is used when a player must make a decision. This can result in either specifying a certain data cluster to be used that affects placeholders (i.e. a character skin) but not the current path or a branching decision that determines which path the player will be on beginning with the next page</p>
@@ -130,7 +131,7 @@
 			<b>Dictionary</b> optList <br>
 			<b>Dictionary</b> choiceList = {}
 		</td>
-		<td>Adds a page to the current chapter with the spch displayed. A list of <a href="blahblah">options</a> and <a href="blah">choices</a> may be specified. Will not add invalid
+		<td>Adds a page to the current chapter with the spch displayed. A list of <a href="#opts_details">options</a> and <a href="#choices_details">choices</a> may be specified. Will not add invalid
 		dictionary entries from the optList but should always return true regardless</td>
 	</tr>
 	<tr>
