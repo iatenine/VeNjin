@@ -10,10 +10,10 @@ func _ready():
 	var landon = {"image":"CreativeCommons/JustinNichol/Jordan", "name":"Landon"}
 	var hellen = {"image":"CreativeCommons/JustinNichol/Leslie", "name":"Hellen"}
 	var hellen_thinking = hellen.duplicate()
-	hellen_thinking["pause"] = 0
+	hellen_thinking["pause"] = 1.9
 	var port_town = {"background":"CreativeCommons/JAP/fortress", "image":"CreativeCommons/JustinNichol/Jordan", "name":"Landon"}
 	
-	var mystery = {"pause":0}
+	var mystery = {"pause":1}
 	var ezekiel = {"image":"CreativeCommons/JustinNichol/Linksvayer", "name":"Ezekiel"}
 	#var optionsMusic = {"music":"song18"}
 	
@@ -54,7 +54,7 @@ func _ready():
 	
 	story.add_page("I don't like the vibe of this guy, Landon", hellen)
 	
-	story.add_page("The name's Ezekiel, friend \nand for the right price... \nI may be willing to risk provoking the Lord himself by harboring a woman aboard my vessel", ezekiel)
+	story.add_page("The name's Ezekiel, friend \nand for the right price... \nI may be willing to risk provoking the Lord himself by harboring a member of the fairer sex aboard my vessel", ezekiel)
 	
 	story.add_page("Hellen, this is exactly what we need! \nYou said it yourself this is a superstitious lot", landon)
 	

@@ -98,4 +98,3 @@ modulate = Color( 1, 1, 1, 0 )
 anims/bg_fade_in = SubResource( 2 )
 anims/character_fade_in = SubResource( 3 )
 anims/fg_fade_in = SubResource( 4 )
-

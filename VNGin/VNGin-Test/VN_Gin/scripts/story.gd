@@ -4,7 +4,7 @@ enum {CHAPTER, PAGE, OPTIONS}
 
 const chapterFeatures = ["name", "number", "path"]
 const pageFeatures = ["speaker", "speech", "options", "choices"]
-const optionList = ["name", "image", "music", "sfx", "background", "pause", "choice_flair"]
+const optionList = ["name", "image", "music", "sfx", "background", "pause"]
 
 const imgPrefix = "res://images/"
 const musicPrefix = "res://Audio/"
@@ -299,15 +299,9 @@ func _fill_in_placeholders(pageRef:Dictionary):
 	
 	for i in story_data.size():
 		var find = data_keys[i]
-		print("Find values: " + str(find))
 		var cluster_arr = get_cluster({find:story_data[find]})
-		print("cluster_arr: " + str(cluster_arr))
-		print("Search values: " + str(cluster_arr[2].keys()))
-		print("Replace value: " + str(cluster_arr[2].values()))
 		
 		for j in range(0, pageFeatures.size()):
-			#print("iter " + str(j))
-			#print(str(pageRef[pageFeatures[j]]))
 			if typeof(pageRef[pageFeatures[j]]) != TYPE_STRING:
 				#Handle dicts here
 				var opts_ref = pageRef[pageFeatures[j]] #Create ref to dict
@@ -323,7 +317,6 @@ func _fill_in_placeholders(pageRef:Dictionary):
 				continue
 			
 			for test in cluster_arr.size():
-				print("Pair to find: " + str(cluster_arr[test].keys()) + ": " + str(cluster_arr[test].values()))
 				
 				find = str(cluster_arr[test].keys())
 				var replace = str(cluster_arr[test].values())
@@ -334,7 +327,6 @@ func _fill_in_placeholders(pageRef:Dictionary):
 				find = find.to_upper()
 				if find.find("%") == -1:
 					find = "%" + find + "%"  #Add % signs around those missing them
-				print("Findthis: " + find)
 				pageRef[pageFeatures[j]] = pageRef[pageFeatures[j]].replace(find, replace)
 	
 	return pageRef

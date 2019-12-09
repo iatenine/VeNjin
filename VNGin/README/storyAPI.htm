@@ -2,31 +2,133 @@
 <head>
 	<link rel="stylesheet" href="api-style.css" />
 </head>
-<table>
+
+<h2>What is V-eNjin</h2>
+<p>V-eNjin is comprised of 2 scripts for Godot version 3+ designed to expedite and ease the process of making either visual novel style games or cutscenes with both linear and branching storylines using the following scripts</p>
+	<ul>
+		<li><b><a href="#story_explain">Story.gd</a></b> Stores and organizes story-data</li>
+		<li><b><a href="#viscomp_explain">VisCompManager.gd</a></b> Works as intermediary between UI elements and story data received from Story.gd</li>
+	</ul>
+
+<h2 id="story_explain">How does story.gd work</h2>
+<p>Story.gd is designed to work as a container of an entire story and, if it has branching narratives, all its possible paths. There are a few terms that are helpful to understand</p>
+<ul>
+	<li id="page_def"><b>page</b> Any single box of dialogue. Each one contains 3 main categories of properties</li>
+		<ul>
+			<li>Speech: The dialogue set to be displayed on this page</li>
+			<li><a href="#opts_details">Options</a>: A dictionary of parameters that may be specified or ignored</li>
+			<li><a href="#choices_details">Choices</a>: A dictionary of choices the player may make at this page</li>
+		</ul>
+	<li id="chapter_def"><b>chapter</b> A collection of pages, much like a real book these may be positioned anywhere an author so chooses. Each one contains 3 properties</li>
+			<ul>
+				<li>Name</li>
+				<li>Number</li>
+				<li>Path</li>
+			</ul>
+	<li id="path_def"><b>path</b> Used to distinguish between overlapping chapter numbers in branching narratives. Linear stories should simply use the default path 0 at all times</li>
+				<p><i>Branching paths visualization (player will continue on any path set until a choice puts them on a new one)</i></p>
+				<div class="visualization">
+					<!--Path labels-->
+					<div class= "Label path0">Path 0</div>
+					<div class= "Label path1">Path 1</div>
+					<div class= "Label path2">Path 2</div>
+
+					<!--Spacers-->
+					<div class="chapter path1"></div>
+					<div class="chapter path2"></div>
+					<div class="chapter path2"></div>
+					<div class="chapter path2"></div>
+
+					<div class="chapter path0 bg">Chapter 1 (choice)</div>
+					<div class="chapter path0 bg">Chapter 2</div>
+					<div class="chapter path0 bg">Chapter 3 (choice)</div>
+					<div class="chapter path0 bg">Chapter 4</div>
+					<div class="chapter path1 bg">Chapter 2</div>
+					<div class="chapter path1 bg">Chapter 3 (choice)</div>
+					<div class="chapter path1 bg">Chapter 4</div>
+					<div class="chapter path2 bg">Chapter 4</div>
+				</div>
+				<br>
+
+	<li id="bookmark_def"><b>bookmark</b> An (x,y) value that determines your current chapter (x-value) and the page of the current chapter (y-value)
+	<li id="cluster_def"><b>data cluster</b> A list of placeholders and the value you wish to replace them with after the player has made a choice. Expressed as {Placeholder:Value}</li>
+</ul>
+<p><i>For more info see <a href="#story.gd api">Story.gd API</a></i></p>
+
+<h2 id="viscomp_explain">How does VisCompManager.gd work</h2>
+<p>May be used with the provided UI elements or plugged into your own UI so long as const book still points to story.gd and <strong>Nodepaths</strong> to the following elements are specified correctly</p>
+	<ul>
+		<li><b>foreground_img</b> TextureRect rendered in front of all other elements and contains a script to handle set_Title(title:String) during chapter transitions</li>
+		<li><b>background_img</b> TextureRect rendered behind all other elements, such as a landscape</li>
+		<li><b>character_img</b> TextureRect sandwiched between background and foreground, usually used to show an image of the character currently speaking</li>
+		<li><b>dPanel</b> A panel containing the dialogue box including all necessary children</li>
+		<li><b>animPlayer</b> A simple animation player to allow fading and pause animations to function properly</li>
+	</ul>
+<p><i>VisCompManager.gd operates largely autonomously once configured to a project's layout and is not necessary to use at all if you'd like to simply use story.gd as a back-end solution</i></p>
+<p><i>For more info see <a href="#VisCompManager.gd api">VisCompManager.gd API</a></i></p>
+
+<h2 id = "opts_details">How to use options</h2>
+<p>When adding a page, the options dictionary may have any or none of the following dictionary keys assigned a value:</p>
+<ul class = "optList">
+	<li><b>name</b> The name of the person speaking as you'd like it displayed in this page. The name box hides if no value specified</li>
+	<li><b>image</b> The image to appear directly before the player. Usually a character portrait of some sort. Searches for the specifed filename (do not include file extension) under the images folder and expects a .png file though this behavior can be changed by altering the imgSuffix value in story.gd</li>
+	<li><b>background</b> Same as above but renders behind image value to create a background</li>
+	<li><b>music (feature not yet implemented)</b> Plays a file with the specified name in the musicPrefix folder with the musicSuffix file extension (res://Audio and .ogg by default). Looping must be specified in Godot's import tab for each file</li>
+	<li><b>sfx (feature not yet implemented)</b> Same as above but uses a different audio stream so music will continue</li>
+	<li><b>pause</b> Creates a delay on the current page of the specified number of seconds. Decimals may be used for milliseconds</li>
+</ul>
+
+<aside class = "examples"><i>Example</i>
+<p><b>add_page("Hello", {"name::"???", "image":"Henry_img" "pause":3})</b><br><br> will add a page showing res://images/<i>Henry_img</i>.png saying <i>"Hello!"</i> with the name box populated by <i>"???"</i> with a <i>3</i> second dramatic pause before the player will be able to continue to the next page</p>
+</aside>
+
+<h2 id = "choices_details">How to use choices</h2>
+<p>A choice is used when a player must make a decision. This can result in either specifying a certain data cluster to be used that affects placeholders (i.e. a character skin) but not the current path or a branching decision that determines which path the player will be on beginning with the next page</p>
+
+<aside class = "examples"><i>Example 1 (branching <a href="#path_def">paths</a>)</i>
+	<p>
+		<b>add_page("", {}, {Yes:0, No:1})</b><br><br>
+		will add a page with no options or dialogue but 2 buttons labeled "Yes" and "No". "Yes" will continue on path 0 while "No" will move to path 1 beginning on the next page
+	</p>
+	<i>Example 2 (<a href="#cluster_def">data cluster</a>)</i>
+	<p>
+			<b>add_cluster("Female":"Gender", "PLAYER_IMG":"FEMALE_IMG")</b><br>
+			<b>add_cluster("Male":"Gender", "PLAYER_IMG":"MALE_IMG")</b><br>
+			<b>add_cluster("Other":"Gender, "PLAYER_IMG":"OTHER_IMG"")</b><br>
+			<b>add_page("", {}, {"Female":"Gender", "Male":"Gender", "Other":Gender})</b><br><br>
+			Adds 3 clusters of data, each specifying certain placeholder data to replace (the PLAYER_IMG in this case) and adds a page that allows the player to select which of the clusters to use
+	</p>
+</aside>
+
+<p>Path choices will cause an immediate branching effect so you may need to create duplicates of the last few pages of the current chapter depending on the situation</p>
+
+<div class = "tabletitle">Story.gd API</div>
+<table id="story.gd api">
+
 <thead>
 	<th>Return Type</th>
 	<th>Name</th>
 	<th>Arguments</th>
 	<th>Description</th>
 </thead>
-	<tr>
+<tr>
 		<td>Vector2</td>
-		<td>add_chapter()</td>		
+		<td>add_chapter()</td>
 		<td>
 			<b>String</b> chapter_name <br>
 			<b>int</b> chapNumber = 0 <br>
 			<b>int</b> chapBranch = 0
 		</td>
-		<td>Adds chapter to the end of the story so far by default but position may be specified as chapNumber or branch specified if storyline is branching and there are multiple 
+		<td>Adds chapter to the end of the story so far by default but position may be specified as chapNumber or branch specified if storyline is branching and there are multiple
 		chapters with the same number (linear stories should simply leave all branches the default value of 0). Returns the x,y axis of where the story was added if successful</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>add_page()</td>
-		<td>	
+		<td>
 			<b>String</b> spch <br>
 			<b>Dictionary</b> optList <br>
-			<b>Dictionary</b> choiceList = {} 
+			<b>Dictionary</b> choiceList = {}
 		</td>
 		<td>Adds a page to the current chapter with the spch displayed. A list of <a href="blahblah">options</a> and <a href="blah">choices</a> may be specified. Will not add invalid
 		dictionary entries from the optList but should always return true regardless</td>
@@ -35,7 +137,7 @@
 		<td>bool</td>
 		<td>add_cluster()</td>
 		<td><b>Dictionary</b> id</td>
-		<td>Adds a <a href="blah">data cluster</a> to the story. Returns false if one already exists, otherwise returns true</td>	
+		<td>Adds a <a href="#cluster_def">data cluster</a> to the story. Returns false if one already exists, otherwise returns true</td>
 	</tr>
 	<tr>
 		<td>bool</td>
@@ -44,134 +146,168 @@
 			<b>Dictionary</b> id <br>
 			<b>Dictionary</b> newPairs
 		</td>
-		<td>Adds the dictionary of newPairs to the <a href="blah">data cluster</a> specified in id</td>	
+		<td>Adds the dictionary of newPairs to the <a href="#cluster_def">data cluster</a> specified in id</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>cluster_exists()</td>
 		<td><b>Dictionary</b> id</td>
-		<td>Returns true if cluster matching the passed id exists, otherwise false</td>	
+		<td>Returns true if cluster matching the passed id exists, otherwise false</td>
 	</tr>
 	<tr>
 		<td>Array</td>
 		<td>get_all_chapter_paths</td>
 		<td><b>int</b> find_chapter</td>
-		<td>Returns an array of all paths that exist for the specified chapter</td>	
+		<td>Returns an array of all paths that exist for the specified chapter</td>
 	</tr>
 	<tr>
 		<td>Vector2</td>
 		<td>get_bookmark()</td>
 		<td></td>
-		<td>Returns the x-y coordinates of the story's current position (x = chapter number, y = path)</td>	
+		<td>Returns the x-y coordinates of the story's current position (x = chapter number, y = path)</td>
 	</tr>
 	<tr>
 		<td>Variant</td>
 		<td>get_chapter()</td>
 		<td><b>int</b> chap = bookmark.x</td>
-		<td>Returns the chapter specified or false if value is out of bounds</td>	
+		<td>Returns the chapter specified or false if value is out of bounds</td>
 	</tr>
 	<tr>
 		<td>int</td>
 		<td>get_chapter_by_coords()</td>
 		<td><b>Vector2</b> coords</td>
-		<td>Returns an int that can be passed to <a href="">get_chapter()</a> corresponding to the specified Vector2</td>	
+		<td>Returns an int that can be passed to <a href="">get_chapter()</a> corresponding to the specified Vector2</td>
 	</tr>
 	<tr>
 		<td>Dictionary</td>
 		<td>get_chapter_index()</td>
 		<td><b>int</b> chap = bookmark.x</td>
-		<td>Returns the index (Dictionary) of the current or specified chapter</td>	
+		<td>Returns the index (Dictionary) of the current or specified chapter</td>
 	</tr>
 	<tr>
 		<td>Dictionary</td>
 		<td>get_page()</td>
 		<td><b>Vector2</b> page = bookmark</td>
-		<td>Returns dictionary with current or specified page's data</td>	
+		<td>Returns dictionary with current or specified page's data</td>
 	</tr>
 	<tr>
 		<td>Array</td>
 		<td>get_toc()</td>
 		<td></td>
-		<td>Returns array representing table of contents with each element populated by a chapter's index</td>	
+		<td>Returns array representing table of contents with each element populated by a chapter's index</td>
 	</tr>
 	<tr>
 		<td>Array</td>
 		<td>get_unique_chapter_nums()</td>
 		<td></td>
-		<td>Returns an array containing only unique chapter numbers, ignoring branching chapters of the same number</td>	
+		<td>Returns an array containing only unique chapter numbers, ignoring branching chapters of the same number</td>
 	</tr>
 	<tr>
 		<td>Array</td>
 		<td>get_unique_paths()</td>
 		<td></td>
-		<td>Returns an array containing each unique path throughout a story</td>	
+		<td>Returns an array containing each unique path throughout a story</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>is_book_end()</td>
 		<td></td>
-		<td>Returns true if on the very last page of a story</td>	
+		<td>Returns true if on the very last page of a story</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>is_last_chapter()</td>
 		<td></td>
-		<td>Returns true if on the last chapter</td>	
+		<td>Returns true if on the last chapter</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>is_last_page()</td>
 		<td></td>
-		<td>Returns true if on last page of current chapter</td>	
+		<td>Returns true if on last page of current chapter</td>
 	</tr>
 	<tr>
 		<td>void</td>
 		<td>jump_to_page()</td>
 		<td><b>int</b> newPage</td>
-		<td>Moves bookmark to specified page within current chapter</td>	
+		<td>Moves bookmark to specified page within current chapter</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>move_path</td>
 		<td><b>int</b> newBranch</td>
-		<td>Causes bookmark to follow a different path (storyline branch). Returns false only if unable to do so</td>	
+		<td>Causes bookmark to follow a different path (storyline branch). Returns false only if unable to do so</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>next_chapter()</td>
 		<td></td>
-		<td>If able to move on to next chapter, does so. If not, returns false (including when at final page)</td>	
+		<td>If able to move on to next chapter, does so. If not, returns false (including when at final page)</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>prev_chapter()</td>
 		<td></td>
-		<td>Moves to previous chapter if able, returns false if unable</td>	
+		<td>Moves to previous chapter if able, returns false if unable</td>
 	</tr>
 	<tr>
 		<td>void</td>
 		<td>reset()</td>
 		<td><b>Vector2</b> = (0,0)</td>
-		<td>Resets bookmark to beginning of story (first chapter, default branch) by default or the setter function for the bookmark. Call this after adding story data</td>	
+		<td>Resets bookmark to beginning of story (first chapter, default branch) by default or the setter function for the bookmark. Call this after adding story data</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>set_chapter()</td>
 		<td><b>int</b> newChap</td>
-		<td>Sets chapter to specified value if possible, returns false otherwise</td>	
+		<td>Sets chapter to specified value if possible, returns false otherwise</td>
 	</tr>
 	<tr>
 		<td>bool</td>
 		<td>turn_page()</td>
 		<td></td>
-		<td>Moves to next page within the current path if possible, returns false otherwise</td>	
+		<td>Moves to next page within the current path if possible, returns false otherwise</td>
 	</tr>
 	<tr>
 		<td>void</td>
 		<td>update_branch_map()</td>
 		<td></td>
-		<td>cycles through the flat list of chapters and creates a 2-dimensional map of them to make organizing branching timelines easier</td>	
+		<td>cycles through the flat list of chapters and creates a 2-dimensional map of them to make organizing branching timelines easier</td>
 	</tr>
 </table>
+
+<div class = "tabletitle">
+	VisCompManager.gd API
+</div>
+
+<table id="VisCompManager.gd api">
+<thead>
+	<th>Return Type</th>
+	<th>Name</th>
+	<th>Arguments</th>
+	<th>Description</th>
+</thead>
+<tr>
+		<td>Void</td>
+		<td>end_story()</td>
+		<td>
+		</td>
+		<td>Called after "The End" is clicked on last page. Exits the game by default</td>
+</tr>
+<tr>
+		<td>Void</td>
+		<td>load_story()</td>
+		<td>newBook</td>
+		<td>Loads the story passed in as newBook, replacing the current one if applicable</td>
+</tr>
+<tr>
+		<td>Void</td>
+		<td>show_page()</td>
+		<td><b>Dictionary</b> newPage = story.get_page()</td>
+		<td>Shows the story's current page by default though a different one may be passed in as an argument</td>
+</tr>
+</table>
+
+<p><i>*API tables only display public functions</i></p>
 </body>
 </html>

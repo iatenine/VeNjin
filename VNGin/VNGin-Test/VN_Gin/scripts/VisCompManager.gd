@@ -7,7 +7,8 @@ extends Node
 #dPanel, character and background images must be specified in editor
 #story data must be passed via load_story() function
 
-export (float) var TITLE_TIME = 0
+export (bool) var FADE_IN_CHAPTERS = true
+export (float) var TITLE_DELAY = 0
 const book = preload("res://scripts/story.gd")
 
 export (NodePath) var foreground_img
@@ -41,7 +42,7 @@ func _on_choice_pressed(selection:Dictionary):
 			print("Warning: Overwriting previously written value: ", story.get_data(key))
 		story.add_data(key, value)
 	
-	clear_inputs()
+	_clear_inputs()
 	_on_next_pressed()
 
 func _on_next_pressed():
@@ -70,13 +71,13 @@ func _ready():
 	
 	next_Button.connect("pressed", self, "_on_next_pressed")
 	
-	clear_boxes()
+	_clear_boxes()
 
-func add_button(var button):
+func _add_button(var button):
 	next_Button.hide();
 	options_Container.add_child(button);
 
-func clear_boxes():
+func _clear_boxes():
 	speechBox.set_text("");
 	nameBox.set_text("");
 	
@@ -84,7 +85,7 @@ func clear_boxes():
 	speechBox.hide()
 	nameBox.hide()
 
-func clear_inputs():
+func _clear_inputs():
 	for c in options_Container.get_children():
 		c.queue_free();
 	next_Button.show();
@@ -92,7 +93,7 @@ func clear_inputs():
 func end_story():
 	get_tree().quit()
 
-func fade_anim(target:String, backwards:bool = false):
+func _fade_anim(target:String, backwards:bool = false):
 	var animName
 	
 	match(target):
@@ -113,33 +114,33 @@ func fade_anim(target:String, backwards:bool = false):
 func load_story(newBook):
 	story = newBook
 
-func option_handler(page, buffer:bool = false):
+func _option_handler(page, buffer:bool = false):
 	var opts = page.options
 	
 	
 	if opts.has("background"):
 		var tex = load(page.options.background)
-		set_background(tex)
+		_set_background(tex)
 	
 	if !buffer:
 		if opts.has("image"):
 			var tex = load(page.options.image)
-			set_image(tex)
+			_set_image(tex)
 		
 		if opts.has("sfx") or opts.has("music"):
-			play_page_sounds(page)
+			_play_page_sounds(page)
 		
 		if page.choices.size() != 0:
 			for i in page.choices.size():
 				var nButton = Button.new()
 				nButton.text = page.choices.keys()[i]
-				add_button(nButton)
+				_add_button(nButton)
 				
 				nButton.connect("pressed", self, "_on_choice_pressed", [{page.choices.values()[i]:page.choices.keys()[i]}])
 		
 			next_Button.hide()
 
-func play_page_sounds(page):
+func _play_page_sounds(page):
 	if page.options.keys().has("sfx"):
 		var stream_sfx = load(page.options.sfx)
 		stream_sfx.loop = false
@@ -151,20 +152,20 @@ func play_page_sounds(page):
 		bgmStream.set_stream(stream_bg)
 		bgmStream.play()
 
-func set_background(var texture):
+func _set_background(var texture):
 	background_img.set_texture(texture);
 
-func set_image(var texture):
+func _set_image(var texture):
 	character_img.set_texture(texture);
 
-func set_name(var t):
+func _set_name(var t):
 	if(t == ""):
 		nameBox.hide()
 	else:
 		nameBox.show()
 		nameBox.set_text(t);
 
-func set_text(var t):
+func _set_text(var t):
 	speechBox.set_text(t);
 	speechBox.show()
 	pass
@@ -181,10 +182,10 @@ func show_page(page:Dictionary = story.get_page()):
 	
 	#Pages
 	if keys.has("speech"):
-		set_name(page.speaker)
-		set_text(page.speech)
+		_set_name(page.speaker)
+		_set_text(page.speech)
 		
-		option_handler(page)
+		_option_handler(page)
 		
 		if page.options.keys().has("pause"):
 			next_Button.hide()
@@ -200,17 +201,18 @@ func show_page(page:Dictionary = story.get_page()):
 		else:
 			foreground_img.set_Title("Prologue\n" +page.name)
 		#Fade-in
-		fade_anim("FG")
-		yield(animPlayer, "animation_finished")
+		_fade_anim("FG")
+		if FADE_IN_CHAPTERS == true:
+			yield(animPlayer, "animation_finished")
 		
 		#Preload background for next page
 		var nextPage = story.get_page(story.get_bookmark() + Vector2(0, 1))
 		if nextPage != null:
-			option_handler(nextPage, true)
+			_option_handler(nextPage, true)
 		
 		#Pause + fade-out
-		yield(get_tree().create_timer(TITLE_TIME), "timeout")
-		fade_anim("FG", true)
+		yield(get_tree().create_timer(TITLE_DELAY), "timeout")
+		_fade_anim("FG", true)
 		yield(animPlayer, "animation_finished")
 		
 		#Ensure content continues flowing
