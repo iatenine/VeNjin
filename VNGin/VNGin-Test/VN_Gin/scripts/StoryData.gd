@@ -11,15 +11,15 @@ func _ready():
 	var hellen = {"image":"CreativeCommons/JustinNichol/Leslie", "name":"Hellen"}
 	var hellen_thinking = hellen.duplicate()
 	hellen_thinking["pause"] = 1.9
-	var port_town = {"background":"CreativeCommons/JAP/fortress", "image":"CreativeCommons/JustinNichol/Jordan", "name":"Landon"}
+	var port_town = {"background":"CreativeCommons/JAP/fortress", "image":"CreativeCommons/JustinNichol/Jordan", "name":"Landon", "music":"song18"}
 	
-	var mystery = {"pause":1}
+	var mystery = {"pause":1, "sfx":"completetask_0", "music":"STOP"}
 	var ezekiel = {"image":"CreativeCommons/JustinNichol/Linksvayer", "name":"Ezekiel"}
 	#var optionsMusic = {"music":"song18"}
 	
 	#Player choices must have keys and values inversed to avoid key collisions
 	var player_choice = {"Hellen":"player_name", "Landon":"player_name"}
-	var path_choice = {"Crushing Poverty": 0, "Oppressive Upper-Class":1}
+	var path_choice = {"France": 0, "Holy Roman Empire":1}
 	
 	story.add_cluster({"player_name":"Hellen"})
 	story.add_cluster({"player_name":"Landon"})
@@ -74,13 +74,12 @@ func _ready():
 	
 	story.add_page("Who would you like to be?", {}, player_choice)
 	
-	story.add_page("What are you fleeing?", {}, path_choice)
+	story.add_page("Where will you flee?", {}, path_choice)
 	
 	#Story paths diverge the moment the player chooses them so final pages must be duplicated
-	story.add_page("More content coming soon, %PLAYER_NAME% %TEST_STR%", player)
+	story.add_page("Let's head to France, %PLAYER_NAME%", player)
 	story.move_path(1)
-	story.add_page("More content coming soon, %PLAYER_NAME% %TEST_STR%", player)
-	#story.add_chapter("New Dawn", 2, 0)
+	story.add_page("Set sails for the Holy Roman Empire, %PLAYER_NAME%!", player)
 	
 	#Story must be reset to beginning and loaded to the VisCompManager
 	story.reset()

@@ -1,0 +1,72 @@
+.visualization{
+  display: grid;
+  justify-content: end;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  min-width: 450px;
+  max-width: 1382px;
+  grid-gap: 5px;
+}
+
+.examples{
+  margin-left: 40px;
+}
+
+.examples > p{
+  background-color: lightgrey;
+}
+
+.bg{
+  width: auto;
+  font-style: italic;
+}
+
+.Label{
+    grid-column: 1;
+    font-weight: bold;
+}
+
+.path0{
+  grid-row: 2;
+}
+
+.path1{
+  grid-row: 3;
+}
+
+.path2{
+  grid-row: 4;
+}
+
+table{
+	width: 100%;
+	//min-width: 836px;
+	display: block;
+}
+
+tr:nth-of-type(odd){
+	background: lightgrey;
+}
+
+td:nth-of-type(1){
+	text-align: center;
+}
+
+td:nth-of-type(2){
+	font-weight: bold;
+}
+
+td:nth-of-type(1), td:nth-of-type(3){
+	color:blue;
+	white-space: nowrap;
+}
+
+td:nth-of-type(3){
+	font-style: italic;
+}
+
+.tabletitle{
+	display: block;
+	font-weight: bold;
+	min-width: 836px;
+	text-align: center;
+}

@@ -73,8 +73,8 @@
 	<li><b>name</b> The name of the person speaking as you'd like it displayed in this page. The name box hides if no value specified</li>
 	<li><b>image</b> The image to appear directly before the player. Usually a character portrait of some sort. Searches for the specifed filename (do not include file extension) under the images folder and expects a .png file though this behavior can be changed by altering the imgSuffix value in story.gd</li>
 	<li><b>background</b> Same as above but renders behind image value to create a background</li>
-	<li><b>music</b> Plays a file with the specified name in the musicPrefix folder with the musicSuffix file extension (res://Audio and .ogg by default). Looping must be specified in Godot's import tab for each file</li>
-	<li><b>sfx</b> Same as above but uses a different audio stream so music will continue</li>
+	<li><b>music (feature not yet implemented)</b> Plays a file with the specified name in the musicPrefix folder with the musicSuffix file extension (res://Audio and .ogg by default). Looping must be specified in Godot's import tab for each file</li>
+	<li><b>sfx (feature not yet implemented)</b> Same as above but uses a different audio stream so music will continue</li>
 	<li><b>pause</b> Creates a delay on the current page of the specified number of seconds. Decimals may be used for milliseconds</li>
 </ul>
 
@@ -276,10 +276,7 @@
 	</tr>
 </table>
 
-<div class = "tabletitle">
-	VisCompManager.gd API
-</div>
-
+<div class = "tabletitle">VisCompManager.gd API
 <table id="VisCompManager.gd api">
 <thead>
 	<th>Return Type</th>
@@ -307,7 +304,7 @@
 		<td>Shows the story's current page by default though a different one may be passed in as an argument</td>
 </tr>
 </table>
+</div>
 
-<p><i>*API tables only display public functions</i></p>
 </body>
 </html>

@@ -148,9 +148,12 @@ func _play_page_sounds(page):
 		sfxStream.play()
 	
 	if page.options.keys().has("music"):
-		var stream_bg = load(page.options.music)
-		bgmStream.set_stream(stream_bg)
-		bgmStream.play()
+		if page.options.music.find("STOP") != -1:
+			bgmStream.stop()
+		else:
+			var stream_bg = load(page.options.music)
+			bgmStream.set_stream(stream_bg)
+			bgmStream.play()
 
 func _set_background(var texture):
 	background_img.set_texture(texture);
